@@ -1,3 +1,4 @@
+{
 int i; int j; float x; bool y;
 j = 10; i = 20;
 i = i + j;

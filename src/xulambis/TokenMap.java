@@ -40,7 +40,7 @@ public class TokenMap {
                     if(isNumber(token)) insertHash("number",token);
                     else if(isPunct(token)) insertHash("punct",token);
                     else if(lastTokenTested != null && isPrimitiveType(lastTokenTested)) insertHash("identificator",token);
-                    else if(lastTokenTested == "" || !isPrimitiveType(lastTokenTested)) insertHash("reserved-word",token);
+                    else if(isReservedWord(token)) insertHash("reserved-word",token);
                     if(token != "=") lastTokenTested = token;
                 }
             }
@@ -97,5 +97,14 @@ public class TokenMap {
         
         if (primitiveTypes.contains(str.toLowerCase())) return true;
         else return false;
+    }
+    
+    private static boolean isReservedWord(String str)
+    {
+        List<String> reservedWords = new ArrayList();
+        reservedWords = Arrays.asList("while","break","if","true");
+        
+        if (reservedWords.contains(str.toLowerCase())) return true;
+        else return false;        
     }
 }
