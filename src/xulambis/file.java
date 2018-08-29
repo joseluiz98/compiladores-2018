@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,7 +17,8 @@ import java.util.List;
  */
 public class file {
     private String filePath;
-    private List<String> fileContent = new ArrayList();    
+    private List<String> fileContent = new ArrayList();
+    private TokenMap tokens = new TokenMap();
     
     public file(String filePath)
     {
@@ -34,7 +34,8 @@ public class file {
         String line;
         while ((line = buffer.readLine()) != null)
         {
-            splitTokens(line);
+//            line = line.replaceAll(" ","");
+            tokens.putToken(line.split(";"));
         }
     }
     
@@ -43,15 +44,9 @@ public class file {
         for(String line : fileContent)
             System.out.println(line);
     }
-    
-    public void splitTokens(String str)
-    {
-        str = str.replaceAll(";"," ; ");
-        String[] s = str.split("\\s+");        
-       
-        for(String st : s)
-        {
-            fileContent.add(st);
-        }
+
+    public TokenMap getTokens() {
+        return tokens;
     }
+    
 }

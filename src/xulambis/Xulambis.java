@@ -17,9 +17,10 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
-            file teste = new file("teste.xul");
-            teste.readFile();
-            teste.showFile();
+            file xulambis = new file("teste.xul");
+            xulambis.readFile();
+            TokenMap xulambisTokens = xulambis.getTokens();
+            xulambisTokens.showTokens();
         }
         catch(Exception e)
         {
