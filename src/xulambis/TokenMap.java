@@ -102,7 +102,7 @@ public class TokenMap {
     private static boolean isReservedWord(String str)
     {
         List<String> reservedWords = new ArrayList();
-        reservedWords = Arrays.asList("while","break","if","true");
+        reservedWords = Arrays.asList("while","break","if","true","int","float","double","const","bool");
         
         if (reservedWords.contains(str.toLowerCase())) return true;
         else return false;        
