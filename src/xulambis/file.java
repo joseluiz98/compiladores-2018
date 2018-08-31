@@ -18,7 +18,7 @@ import java.util.List;
 public class file {
     private String filePath;
     private List<String> fileContent = new ArrayList();
-    private TokenMap tokens = new TokenMap();
+    private TokenMap lexems = new TokenMap();
     
     public file(String filePath)
     {
@@ -35,7 +35,7 @@ public class file {
         while ((line = buffer.readLine()) != null)
         {
 //            line = line.replaceAll(" ","");
-            tokens.putToken(line.split(";"));
+            lexems.putToken(line.split(";"));
         }
     }
     
@@ -46,7 +46,7 @@ public class file {
     }
 
     public TokenMap getTokens() {
-        return tokens;
+        return lexems;
     }
     
 }
