@@ -17,10 +17,14 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
-            file xulambis = new file("teste.xul");
+            FileReader xulambis = new FileReader("teste.xul");
             xulambis.readFile();
-            TokenMap xulambisTokens = xulambis.getTokens();
-            xulambisTokens.showTokens();
+            SymbolsTable xulambisSymbols = xulambis.getTokens();
+            System.out.println("Tokens da Xulambis\n");
+            xulambisSymbols.showTokens();
+            System.out.println("\n\nTabela de Simbolos (Identificador e Tipo)");
+            xulambisSymbols.showSymbols();
+            
         }
         catch(Exception e)
         {

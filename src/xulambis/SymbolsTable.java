@@ -15,8 +15,13 @@ import java.util.Map;
  *
  * @author jose_
  */
-public class TokenMap {
+public class SymbolsTable {
     private HashMap<String, List<String>> tokens = new HashMap<>();
+    private HashMap<String, String> symbolsTable = new HashMap<>();
+
+    public HashMap<String, List<String>> getTokens() {
+        return tokens;
+    }
     
     public void putToken(String[] line) throws Exception
     {
@@ -29,42 +34,71 @@ public class TokenMap {
         {
             lastTokenTested = "";
             String[] lexemes = lineSemiColonSplitted.split("\\s+");
-            for(String token : lexemes)
+            for(String lexem : lexemes)
             {
-                if(token.isEmpty())
+                if(lexem.isEmpty())
                 {
                     continue;
                 }
                 else
                 {
-                    if(isNumber(token)) insertHash("number",token);
-                    else if(isPunct(token)) insertHash("punct",token);
-                    else if(lastTokenTested != null && isPrimitiveType(lastTokenTested)) insertHash("identificator",token);
-                    else if(isReservedWord(token)) insertHash("reserved-word",token);
-                    if(token != "=") lastTokenTested = token;
+                    if(isNumber(lexem)) insertToken("number",lexem);
+                    else if(isPunct(lexem)) insertToken("punct",lexem);
+                    else if(lastTokenTested != null && isPrimitiveType(lastTokenTested))
+                    {
+                        insertToken("id",lexem);
+                        
+                        if(!symbolExists(lexem)) insertSymbol(lexem, lastTokenTested);
+                    }
+                    else if(isReservedWord(lexem)) insertToken("reserved-word",lexem);
+                    if(lexem != "=") lastTokenTested = lexem;
                 }
             }
         }
     }
     
-    private void insertHash(String key, String token)
+    private boolean symbolExists(String lexem)
+    {
+        String list = symbolsTable.get(lexem);
+        if(list != null) return true;
+        else return false;
+    }
+    
+    private void insertSymbol(String lexem, String lastTokenTested)
+    {
+        symbolsTable.put(lexem, lastTokenTested);
+    }
+    
+    public void showSymbols()
+    {
+        for (Map.Entry<String, String> entry : symbolsTable.entrySet())
+        {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            
+            System.out.println (key + " " + value);
+        }
+    }
+    
+    private void insertToken(String key, String lexem)
     {
         List<String> list = tokens.get(key);
         if(list == null)
         {
             list = new ArrayList();
-            list.add(token);
+            list.add(lexem);
         }
         else
         {
-            if(!list.contains(token)) list.add(token);
+            if(!list.contains(lexem)) list.add(lexem);
         }
         tokens.put(key, list);
     }
     
     public void showTokens()
     {
-        for (Map.Entry<String, List<String>> entry : tokens.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : tokens.entrySet())
+        {
             String key = entry.getKey();
             List<String> value = entry.getValue();
             

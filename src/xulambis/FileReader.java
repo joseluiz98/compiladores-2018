@@ -7,7 +7,6 @@ package xulambis;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +14,12 @@ import java.util.List;
  *
  * @author aluno
  */
-public class file {
+public class FileReader {
     private String filePath;
     private List<String> fileContent = new ArrayList();
-    private TokenMap lexems = new TokenMap();
+    private SymbolsTable lexems = new SymbolsTable();
     
-    public file(String filePath)
+    public FileReader(String filePath)
     {
         this.filePath = filePath;
     }
@@ -29,7 +28,7 @@ public class file {
     {
         File file = new File(filePath);
 
-        BufferedReader buffer = new BufferedReader(new FileReader(file));
+        BufferedReader buffer = new BufferedReader(new java.io.FileReader(file));
 
         String line;
         while ((line = buffer.readLine()) != null)
@@ -45,7 +44,7 @@ public class file {
             System.out.println(line);
     }
 
-    public TokenMap getTokens() {
+    public SymbolsTable getTokens() {
         return lexems;
     }
     
