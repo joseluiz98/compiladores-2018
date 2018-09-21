@@ -17,7 +17,6 @@ import java.util.Map;
  */
 public class SymbolsTable {
     private HashMap<String, List<String>> tokens = new HashMap<>();
-    private HashMap<String, String> symbolsTable = new HashMap<>();
 
     public HashMap<String, List<String>> getTokens() {
         return tokens;
@@ -44,39 +43,11 @@ public class SymbolsTable {
                 {
                     if(isNumber(lexem)) insertToken("number",lexem);
                     else if(isPunct(lexem)) insertToken("punct",lexem);
-                    else if(lastTokenTested != null && isPrimitiveType(lastTokenTested))
-                    {
-                        insertToken("id",lexem);
-                        
-                        if(!symbolExists(lexem)) insertSymbol(lexem, lastTokenTested);
-                    }
+                    else if(lastTokenTested != null && isPrimitiveType(lastTokenTested)) insertToken("id",lexem);
                     else if(isReservedWord(lexem)) insertToken("reserved-word",lexem);
                     if(lexem != "=") lastTokenTested = lexem;
                 }
             }
-        }
-    }
-    
-    private boolean symbolExists(String lexem)
-    {
-        String list = symbolsTable.get(lexem);
-        if(list != null) return true;
-        else return false;
-    }
-    
-    private void insertSymbol(String lexem, String lastTokenTested)
-    {
-        symbolsTable.put(lexem, lastTokenTested);
-    }
-    
-    public void showSymbols()
-    {
-        for (Map.Entry<String, String> entry : symbolsTable.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            
-            System.out.println (key + " " + value);
         }
     }
     

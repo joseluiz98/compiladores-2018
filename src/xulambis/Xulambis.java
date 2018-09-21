@@ -18,12 +18,10 @@ public class Xulambis {
         try
         {
             FileReader xulambis = new FileReader("teste.xul");
-            xulambis.readFile();
+            xulambis.readFileByWords();
             SymbolsTable xulambisSymbols = xulambis.getTokens();
-            System.out.println("Tokens da Xulambis\n");
+            System.out.println("Tabela de Símbolos da Xulambis\n");
             xulambisSymbols.showTokens();
-            System.out.println("\n\nTabela de Simbolos (Identificador e Tipo)");
-            xulambisSymbols.showSymbols();
             
         }
         catch(Exception e)
