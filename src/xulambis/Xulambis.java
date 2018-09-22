@@ -5,6 +5,8 @@
  */
 package xulambis;
 
+import static xulambis.FileReader.getInstance;
+
 /**
  *
  * @author aluno
@@ -17,11 +19,13 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
-            FileReader xulambis = new FileReader("teste.xul");
-            xulambis.readFileByWords();
-            SymbolsTable xulambisSymbols = xulambis.getTokens();
-            System.out.println("Tabela de Símbolos da Xulambis\n");
-            xulambisSymbols.showTokens();
+            LexicalAnalyzer.getInstance().analyzeChar();
+            SymbolsTable.getInstance().printTokens();
+//            FileReader xulambis = new FileReader("teste.xul");
+//            xulambis.readFileByWords();
+//            SymbolsTable xulambisSymbols = xulambis.getTokens();
+//            System.out.println("Tabela de Símbolos da Xulambis\n");
+//            xulambisSymbols.showTokens();
             
         }
         catch(Exception e)

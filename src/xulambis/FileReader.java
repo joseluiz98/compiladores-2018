@@ -19,18 +19,23 @@ import java.util.List;
  */
 public class FileReader
 {
-
-    private String filePath;
+    private static FileInputStream fis;
+    private static FileReader fileReader;
+    private static String filePath = "teste.xul";
     private File file = new File(filePath);
     private List<String> fileContent = new ArrayList();
     private SymbolsTable lexems = new SymbolsTable();
 
-    public FileReader(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public List<Character> readFileByEachChar() throws FileNotFoundException
+    public static FileReader getInstance() throws FileNotFoundException
     {
+        if(fileReader == null) fileReader = new FileReader(filePath);
+        return fileReader;
+    }
+    
+    public FileReader(String filePath) throws FileNotFoundException
+    {
+        this.filePath = filePath;
+        
         if (!file.exists())
         {
             System.out.println(filePath + " does not exist.");
@@ -42,21 +47,20 @@ public class FileReader
             System.out.println(file.getName() + " cannot be read from.");
 //          return;
         }
-        try
+        
+        fis = new FileInputStream(file);
+    }
+
+    public static char getNextChar() throws IOException
+    {
+        char current;
+        if(fis.available() > 0)
         {
-            FileInputStream fis = new FileInputStream(file);
-            char current;
-            while (fis.available() > 0)
-            {
-                current = (char) fis.read();
-                LexicalAnalyzer.getInstance().analyzeChar(current);
-            }
+            current = (char) fis.read();
+            return current;
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return null;
+//        throw new IOException("File Reader is closed!");
+    return '\n';
     }
 
     public void readFileByWords() throws Exception {
@@ -79,6 +83,15 @@ public class FileReader
 
     public SymbolsTable getTokens() {
         return lexems;
+    }
+
+    public char getProximo()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
 }

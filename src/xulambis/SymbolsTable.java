@@ -16,8 +16,15 @@ import java.util.Map;
  * @author jose_
  */
 public class SymbolsTable {
-    private HashMap<String, List<String>> tokens = new HashMap<>();
+    private static SymbolsTable table;
+    private static HashMap<String, List<String>> tokens = new HashMap<>();
 
+    public static SymbolsTable getInstance()
+    {
+        if(table == null) table = new SymbolsTable();
+        return table;
+    }
+    
     public HashMap<String, List<String>> getTokens() {
         return tokens;
     }
@@ -51,7 +58,7 @@ public class SymbolsTable {
         }
     }
     
-    private void insertToken(String key, String lexem)
+    public static void insertToken(String key, String lexem)
     {
         List<String> list = tokens.get(key);
         if(list == null)
@@ -66,7 +73,7 @@ public class SymbolsTable {
         tokens.put(key, list);
     }
     
-    public void showTokens()
+    public void printTokens()
     {
         for (Map.Entry<String, List<String>> entry : tokens.entrySet())
         {
