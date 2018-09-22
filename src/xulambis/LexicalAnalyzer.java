@@ -18,6 +18,7 @@ import java.util.logging.Logger;
  */
 public class LexicalAnalyzer {
     private static LexicalAnalyzer lexicalAnalyzer;
+    
     private List<Character> aux = new ArrayList<>();
     
     public static LexicalAnalyzer getInstance()
@@ -31,12 +32,30 @@ public class LexicalAnalyzer {
         char current = FileReader.getInstance().getNextChar();
         System.out.println(current);
         
-        if(current != '\n')
-        {
+        if(current != '\f')
+        {            
             if(ifToken(current))
             {
-                SymbolsTable.getInstance().insertToken("reserved-word", "if");
+                SymbolsTable.insertToken("reserved-word", "if");
             }
+            if(breakToken(current))
+            {
+                SymbolsTable.insertToken("reserved-word", "break");
+            }
+            
+            List<Character> ifNumberFunctionReturns = numberToken(current);
+            if(!ifNumberFunctionReturns.isEmpty())
+            {
+                String number = "";
+                
+                for(Character c : ifNumberFunctionReturns)
+                {
+                    number += c;
+                }
+                
+                SymbolsTable.insertToken("number", number);
+            }
+            
             return analyzeChar();
         }
         return true;
@@ -46,11 +65,63 @@ public class LexicalAnalyzer {
     {
         if(current == 'i')
         {
-            current = FileReader.getInstance().getNextChar();
+            current = FileReader.getNextChar();
             System.out.println(current);
             if(current == 'f')
-                return true;
+            {
+                current = FileReader.getNextChar();
+                if(current == ' ' || current == '(') return true;
+            }
         }
         return false;
+    }
+    
+    private static boolean breakToken(char current) throws FileNotFoundException, IOException
+    {
+        if(current == 'b')
+        {
+            current = FileReader.getNextChar();
+            System.out.println(current);
+            if(current == 'r')
+            {
+                current = FileReader.getNextChar();
+                System.out.println(current);
+                
+                if(current == 'e')
+                {
+                    current = FileReader.getNextChar();
+                    System.out.println(current);
+                    if(current == 'a')
+                    {
+                        current = FileReader.getNextChar();
+                        System.out.println(current);
+                        if(current == 'k')
+                        {
+                            current = FileReader.getNextChar();
+                            if(current == ';') return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static List<Character> numberToken(char current) throws IOException
+    {
+        List<Character> number = new ArrayList<>();
+        
+        if(current >= '0' && current <= '9')
+        {
+            while(current >= '0' && current <= '9' || current == '.')
+            {
+                System.out.println(current);
+                number.add(current);
+                current = FileReader.getNextChar();
+            }
+            
+            if(number.get(number.size()-1) == '.') throw new IOException("Number empty in second member");
+        }
+            return number;
     }
 }

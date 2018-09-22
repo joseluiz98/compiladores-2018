@@ -60,7 +60,7 @@ public class FileReader
             return current;
         }
 //        throw new IOException("File Reader is closed!");
-    return '\n';
+    return '\f';
     }
 
     public void readFileByWords() throws Exception {
