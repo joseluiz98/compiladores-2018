@@ -73,7 +73,7 @@ public class SymbolsTable {
         tokens.put(key, list);
     }
     
-    public void printTokens()
+    public static void printTokens()
     {
         for (Map.Entry<String, List<String>> entry : tokens.entrySet())
         {

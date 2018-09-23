@@ -20,17 +20,13 @@ public class Xulambis {
         try
         {
             LexicalAnalyzer.getInstance().analyzeChar();
+            System.out.println("Tabela de Símbolos da Xulambis\n");
             SymbolsTable.getInstance().printTokens();
-//            FileReader xulambis = new FileReader("teste.xul");
-//            xulambis.readFileByWords();
-//            SymbolsTable xulambisSymbols = xulambis.getTokens();
-//            System.out.println("Tabela de Símbolos da Xulambis\n");
-//            xulambisSymbols.showTokens();
             
         }
         catch(Exception e)
         {
-            System.out.println(e);
+            System.out.println("Fatal Error: " + e.getMessage());
         }
     }
     

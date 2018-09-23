@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,9 @@ import java.util.List;
  */
 public class FileReader
 {
-    private static FileInputStream fis;
+    private static FileInputStream reader;
     private static FileReader fileReader;
+    private static RandomAccessFile raf;
     private static String filePath = "teste.xul";
     private File file = new File(filePath);
     private List<String> fileContent = new ArrayList();
@@ -38,60 +41,37 @@ public class FileReader
         
         if (!file.exists())
         {
-            System.out.println(filePath + " does not exist.");
             throw new FileNotFoundException(filePath + " does not exist.");
         
         }
         if (!(file.isFile() && file.canRead()))
         {
-            System.out.println(file.getName() + " cannot be read from.");
 //          return;
         }
         
-        fis = new FileInputStream(file);
+        reader = new FileInputStream(file);
+        raf = new RandomAccessFile(file, "r");
     }
-
-    public static char getNextChar() throws IOException
+    
+    public static char getNextChar(int startByte) throws IOException
     {
-        char current;
-        if(fis.available() > 0)
+        try
         {
-            current = (char) fis.read();
-            return current;
+            if(startByte >= 0 && startByte < raf.length()-1)
+            {
+                raf.seek(startByte);
+                byte[] bytes = new byte[1];
+                raf.read(bytes);
+                String currentChar = new String(bytes);
+
+               return currentChar.charAt(0);
+            }
+            raf.close();
+            return '\f';
         }
-//        throw new IOException("File Reader is closed!");
-    return '\f';
-    }
-
-    public void readFileByWords() throws Exception {
-        File file = new File(filePath);
-
-        BufferedReader buffer = new BufferedReader(new java.io.FileReader(file));
-
-        String line;
-        while ((line = buffer.readLine()) != null) {
-//            line = line.replaceAll(" ","");
-            lexems.putToken(line.split(";"));
-        }
-    }
-
-    public void showFile() {
-        for (String line : fileContent) {
-            System.out.println(line);
+        catch(IOException e)
+        {
+            throw new IOException("File reader closed! " + e.getMessage());
         }
     }
-
-    public SymbolsTable getTokens() {
-        return lexems;
-    }
-
-    public char getProximo()
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
 }
