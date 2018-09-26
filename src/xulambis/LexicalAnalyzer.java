@@ -33,7 +33,7 @@ public class LexicalAnalyzer {
         
         if(current != '\f')
         {
-            
+            ArrayList<Character> id;
             if(ifToken(current))
             {
                 SymbolsTable.insertToken("reserved-word", "if");
@@ -49,7 +49,20 @@ public class LexicalAnalyzer {
             else if(breakToken(current))
             {
                 SymbolsTable.insertToken("reserved-word", "break");
-            }            
+            }
+            else if((id = idToken(current)) != null)
+            {
+                
+                List<Character> ifNumberFunctionReturns = numberToken(current);
+                String idString = "";
+
+                for(Character c : id)
+                {
+                    idString += c;
+                }
+
+                SymbolsTable.insertToken("id", idString);
+            }
             else
             {
                 List<Character> ifNumberFunctionReturns = numberToken(current);
@@ -147,6 +160,29 @@ public class LexicalAnalyzer {
         return false;
     }
     
+    private static ArrayList<Character> idToken(char current) throws IOException
+    {
+        ArrayList<Character> id = new ArrayList<>();
+        int startByte = currentByte;
+        current = Character.toLowerCase(current);
+        
+        if(Character.isLetter(current))
+        {
+            while(Character.isLetter(current))
+            {
+                id.add(current);
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+            }
+        }
+        else
+        {
+            return null;
+        }
+        if(id.isEmpty()) currentByte = startByte;
+        return id;
+    }
+            
     private static boolean breakToken(char current) throws FileNotFoundException, IOException
     {
         int startByte = currentByte;
