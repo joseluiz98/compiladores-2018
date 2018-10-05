@@ -46,6 +46,18 @@ public class LexicalAnalyzer {
             {
                 SymbolsTable.insertToken("primitive-type", "int");
             }
+            else if(floatToken(current))
+            {
+                SymbolsTable.insertToken("primitive-type", "float");
+            }
+            else if(boolToken(current))
+            {
+                SymbolsTable.insertToken("primitive-type", "bool");
+            }
+            else if(trueToken(current))
+            {
+                SymbolsTable.insertToken("reserved-word", "true");
+            }
             else if(breakToken(current))
             {
                 SymbolsTable.insertToken("reserved-word", "break");
@@ -238,5 +250,94 @@ public class LexicalAnalyzer {
             currentByte = startByte;
         }
         return number;
+    }
+    
+    private static boolean floatToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == 'f')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == 'l')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                if(current == 'o')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                    if(current == 'a')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == 't')
+                        {
+                            currentByte++;
+                            current = FileReader.getNextChar(currentByte);
+                            if(current == ' ') return true;
+                        }
+                    }
+                }
+            }
+        }
+        currentByte = startByte;
+        return false;
+    }
+    
+    private static boolean boolToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == 'b')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == 'o')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                if(current == 'o')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                    if(current == 'l')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == ' ') return true;
+                    }
+                }
+            }
+        }
+        currentByte = startByte;
+        return false;
+    }
+    
+    private static boolean trueToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == 't')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == 'r')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                if(current == 'u')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                    if(current == 'e')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == ';') return true;
+                    }
+                }
+            }
+        }
+        currentByte = startByte;
+        return false;
     }
 }
