@@ -22,7 +22,6 @@ public class Xulambis {
             LexicalAnalyzer.getInstance().analyzeChar();
             System.out.println("Tabela de Símbolos da Xulambis\n");
             SymbolsTable.getInstance().printTokens();
-            
         }
         catch(Exception e)
         {

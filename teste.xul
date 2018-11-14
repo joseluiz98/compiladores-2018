@@ -6,6 +6,6 @@ x = 13.8;
 y = true;
 while ( y ) {
 i = i + j;
-if ( i < j ) break;
+if ( i == j ) break;
 }
 }

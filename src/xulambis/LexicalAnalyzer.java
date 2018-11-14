@@ -33,7 +33,7 @@ public class LexicalAnalyzer {
         
         if(current != '\f')
         {
-            ArrayList<Character> id;
+            ArrayList<Character> id, token;
             if(ifToken(current))
             {
                 SymbolsTable.insertToken("reserved-word", "if");
@@ -62,10 +62,27 @@ public class LexicalAnalyzer {
             {
                 SymbolsTable.insertToken("reserved-word", "break");
             }
+            else if(punctuationToken(current))
+            {
+                SymbolsTable.insertToken("punct", "break");
+            }
+            else if((token = comparisonToken(current)) != null)
+            {
+                String idString = "";
+
+                for(Character c : token)
+                {
+                    idString += c;
+                }
+
+                SymbolsTable.insertToken("comparison", idString);
+            }
+            else if(assignmentToken(current))
+            {
+                SymbolsTable.insertToken("assignment", "=");
+            }
             else if((id = idToken(current)) != null)
             {
-                
-                List<Character> ifNumberFunctionReturns = numberToken(current);
                 String idString = "";
 
                 for(Character c : id)
@@ -339,5 +356,65 @@ public class LexicalAnalyzer {
         }
         currentByte = startByte;
         return false;
+    }
+    private static boolean assignmentToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == '=')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            return true;
+        }
+        return false;
+    }
+    private static boolean punctuationToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == 't')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == 'r')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                if(current == 'u')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                    if(current == 'e')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == ';') return true;
+                    }
+                }
+            }
+        }
+        currentByte = startByte;
+        return false;
+    }
+    private static ArrayList<Character> comparisonToken(char current) throws FileNotFoundException, IOException
+    {
+        ArrayList<Character> comparisonToken = new ArrayList<>();
+        int startByte = currentByte;
+        char nextChar = FileReader.getNextChar(currentByte++);
+        
+        if(current == '<' || current == '>' || (current == '=' && nextChar == '='))
+        {
+            currentByte = startByte;
+            comparisonToken.add(current);
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == '=')
+            {
+                comparisonToken.add(current);                
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+            }
+            return comparisonToken;
+        }
+        return null;
     }
 }
