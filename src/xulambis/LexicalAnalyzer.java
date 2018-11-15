@@ -62,10 +62,10 @@ public class LexicalAnalyzer {
             {
                 SymbolsTable.insertToken("reserved-word", "break");
             }
-            else if(punctuationToken(current))
-            {
-                SymbolsTable.insertToken("punct", "break");
-            }
+//            else if(punctuationToken(current))
+//            {
+//                SymbolsTable.insertToken("punct", "break");
+//            }
             else if((token = comparisonToken(current)) != null)
             {
                 String idString = "";
@@ -399,11 +399,12 @@ public class LexicalAnalyzer {
     {
         ArrayList<Character> comparisonToken = new ArrayList<>();
         int startByte = currentByte;
-        char nextChar = FileReader.getNextChar(currentByte++);
+        
+        char nextChar = '\f';
+        if(currentByte+1 < FileReader.getLastByte()) nextChar = FileReader.getNextChar(currentByte+1);
         
         if(current == '<' || current == '>' || (current == '=' && nextChar == '='))
         {
-            currentByte = startByte;
             comparisonToken.add(current);
             currentByte++;
             current = FileReader.getNextChar(currentByte);
@@ -415,6 +416,7 @@ public class LexicalAnalyzer {
             }
             return comparisonToken;
         }
+        currentByte = startByte;
         return null;
     }
 }

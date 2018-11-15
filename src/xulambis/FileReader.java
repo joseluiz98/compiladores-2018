@@ -74,4 +74,9 @@ public class FileReader
             throw new IOException("File reader closed! " + e.getMessage());
         }
     }
+    
+    public static long getLastByte() throws IOException
+    {
+        return raf.length()-1;
+    }
 }
