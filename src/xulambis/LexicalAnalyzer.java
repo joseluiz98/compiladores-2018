@@ -9,8 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +31,9 @@ public class LexicalAnalyzer {
         
         if(current != '\f')
         {
-            ArrayList<Character> id, token;
+            ArrayList<Character> token;
+            Character punct;
+            
             if(ifToken(current))
             {
                 SymbolsTable.insertToken("reserved-word", "if");
@@ -62,10 +62,10 @@ public class LexicalAnalyzer {
             {
                 SymbolsTable.insertToken("reserved-word", "break");
             }
-//            else if(punctuationToken(current))
-//            {
-//                SymbolsTable.insertToken("punct", "break");
-//            }
+            else if((punct = punctuationToken(current)) != 0)
+            {
+                SymbolsTable.insertToken("punct", punct.toString());
+            }
             else if((token = comparisonToken(current)) != null)
             {
                 String idString = "";
@@ -81,11 +81,11 @@ public class LexicalAnalyzer {
             {
                 SymbolsTable.insertToken("assignment", "=");
             }
-            else if((id = idToken(current)) != null)
+            else if((token = idToken(current)) != null)
             {
                 String idString = "";
 
-                for(Character c : id)
+                for(Character c : token)
                 {
                     idString += c;
                 }
@@ -126,7 +126,12 @@ public class LexicalAnalyzer {
             {
                 currentByte++;
                 current = FileReader.getNextChar(currentByte);
-                if(current == ' ' || current == '(') return true;
+                if(current == ' ' || current == '(')
+                {
+                    currentByte--;
+                    current = FileReader.getNextChar(currentByte);
+                    return true;
+                }
             }
         }
         currentByte = startByte;
@@ -345,12 +350,7 @@ public class LexicalAnalyzer {
                 {
                     currentByte++;
                     current = FileReader.getNextChar(currentByte);
-                    if(current == 'e')
-                    {
-                        currentByte++;
-                        current = FileReader.getNextChar(currentByte);
-                        if(current == ';') return true;
-                    }
+                    if(current == 'e') return true;
                 }
             }
         }
@@ -368,32 +368,15 @@ public class LexicalAnalyzer {
         }
         return false;
     }
-    private static boolean punctuationToken(char current) throws FileNotFoundException, IOException
+    private static Character punctuationToken(char current) throws FileNotFoundException, IOException
     {
+        final String REGEX="[^.,%*$#@?^!&'|/\\\\~\\[\\]{}+-;\"-()]*";
+        
         int startByte = currentByte;
-        if(current == 't')
-        {
-            currentByte++;
-            current = FileReader.getNextChar(currentByte);
-            if(current == 'r')
-            {
-                currentByte++;
-                current = FileReader.getNextChar(currentByte);
-                if(current == 'u')
-                {
-                    currentByte++;
-                    current = FileReader.getNextChar(currentByte);
-                    if(current == 'e')
-                    {
-                        currentByte++;
-                        current = FileReader.getNextChar(currentByte);
-                        if(current == ';') return true;
-                    }
-                }
-            }
-        }
+        if (REGEX.indexOf(current) >= 0) return current;
+        
         currentByte = startByte;
-        return false;
+        return 0;
     }
     private static ArrayList<Character> comparisonToken(char current) throws FileNotFoundException, IOException
     {
