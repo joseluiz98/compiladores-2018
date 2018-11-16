@@ -3,9 +3,9 @@ int i; int j; float x; bool y;
 j = 10; i = 20;
 i = i + j;
 x = 13.8;
-y = true;
+y = 15;
 while ( y ) {
 i = i + j;
 if ( i < j ) break;
-}
+
 }
