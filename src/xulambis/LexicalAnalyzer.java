@@ -113,7 +113,6 @@ public class LexicalAnalyzer {
                 Token previousTokenRead = TokenList.getTokenAt(TokenList.getTokens().size()-1);
                 if(previousTokenRead.getTokenName() == "primitive-type")
                 {
-                    
                     token.setTokenName("identifier");
                     token.setLexem(varName);
                     TokenList.insertToken(token);

@@ -5,8 +5,6 @@
  */
 package xulambis;
 
-import static xulambis.FileReader.getInstance;
-
 /**
  *
  * @author aluno
