@@ -20,7 +20,11 @@ public class Xulambis {
         try
         {
             LexicalAnalyzer.getInstance().analyzeChar();
-            System.out.println("Tabela de Símbolos da Xulambis\n");
+            
+            System.out.println("Tokens do código-fonte\n");
+            TokenList.getInstance().printTokens();
+            
+            System.out.println("Tabela de Símbolos do código-fonte\n");
             SymbolsTable.getInstance().printTokens();
         }
         catch(Exception e)

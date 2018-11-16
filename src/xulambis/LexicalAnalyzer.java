@@ -15,7 +15,7 @@ import java.util.List;
  * @author aluno
  */
 public class LexicalAnalyzer {
-    private static LexicalAnalyzer lexicalAnalyzer;    
+    private static LexicalAnalyzer lexicalAnalyzer;
     private List<Character> aux = new ArrayList<>();
     private static int currentByte = 0;
     
@@ -25,86 +25,124 @@ public class LexicalAnalyzer {
         return lexicalAnalyzer;
     }
 
-    static boolean analyzeChar() throws IOException
+    static boolean analyzeChar() throws IOException, Exception
     {
         char current = FileReader.getInstance().getNextChar(currentByte);
         
         if(current != '\f')
         {
-            ArrayList<Character> token;
+            Token token = new Token();
+            ArrayList<Character> functionReturn;
             Character punct;
             
             if(ifToken(current))
             {
-                SymbolsTable.insertToken("reserved-word", "if");
+                token.setTokenName("reserved-word");
+                token.setLexem("if");
+                TokenList.insertToken(token);
             }
             else if(whileToken(current))
             {
-                SymbolsTable.insertToken("reserved-word", "while");
+                token.setTokenName("reserved-word");
+                token.setLexem("while");
+                TokenList.insertToken(token);
             }
             else if(intToken(current))
             {
-                SymbolsTable.insertToken("primitive-type", "int");
+                token.setTokenName("primitive-type");
+                token.setLexem("int");
+                TokenList.insertToken(token);
             }
             else if(floatToken(current))
             {
-                SymbolsTable.insertToken("primitive-type", "float");
+                token.setTokenName("primitive-type");
+                token.setLexem("float");
+                TokenList.insertToken(token);
             }
             else if(boolToken(current))
             {
-                SymbolsTable.insertToken("primitive-type", "bool");
+                token.setTokenName("primitive-type");
+                token.setLexem("bool");
+                TokenList.insertToken(token);
             }
             else if(trueToken(current))
             {
-                SymbolsTable.insertToken("reserved-word", "true");
+                token.setTokenName("reserved-word");
+                token.setLexem("true");
+                TokenList.insertToken(token);
             }
             else if(breakToken(current))
             {
-                SymbolsTable.insertToken("reserved-word", "break");
+                token.setTokenName("reserved-word");
+                token.setLexem("break");
+                TokenList.insertToken(token);
             }
-            else if((punct = punctuationToken(current)) != 0)
+            else if((punct = punctuationToken(current)) != null)
             {
-                SymbolsTable.insertToken("punct", punct.toString());
+                token.setTokenName("delimiter");
+                token.setLexem(punct.toString());
+                TokenList.insertToken(token);
             }
-            else if((token = comparisonToken(current)) != null)
+            else if((functionReturn = comparisonToken(current)) != null)
             {
-                String idString = "";
+                String toString = "";
 
-                for(Character c : token)
+                for(Character c : functionReturn)
                 {
-                    idString += c;
+                    toString += c;
                 }
-
-                SymbolsTable.insertToken("comparison", idString);
+                
+                token.setTokenName("comparison");
+                token.setLexem(toString);
+                TokenList.insertToken(token);
             }
             else if(assignmentToken(current))
             {
-                SymbolsTable.insertToken("assignment", "=");
+                token.setTokenName("assignment");
+                token.setLexem("=");
+                TokenList.insertToken(token);
             }
-            else if((token = idToken(current)) != null)
+            else if((functionReturn = idToken(current)) != null)
             {
-                String idString = "";
-
-                for(Character c : token)
+                String varName = "";
+                for(Character c : functionReturn)
                 {
-                    idString += c;
+                    varName += c;
                 }
-
-                SymbolsTable.insertToken("id", idString);
+                
+                Token previousTokenRead = TokenList.getTokenAt(TokenList.getTokens().size()-1);
+                if(previousTokenRead.getTokenName() == "primitive-type")
+                {
+                    
+                    token.setTokenName("identifier");
+                    token.setLexem(varName);
+                    TokenList.insertToken(token);
+                    
+                    String idType = previousTokenRead.getLexem();
+                    SymbolsTable.insertToken(varName, idType);
+                }
+                else
+                {
+                    token.setTokenName("identifier");
+                    token.setLexem(varName);
+                    TokenList.insertToken(token);
+                }
             }
             else
             {
-                List<Character> ifNumberFunctionReturns = numberToken(current);
-                if(!ifNumberFunctionReturns.isEmpty())
+                List<Character> aux = numberToken(current);
+                if(!aux.isEmpty())
                 {
-                    String number = "";
+                    
+                String toString = "";
 
-                    for(Character c : ifNumberFunctionReturns)
-                    {
-                        number += c;
-                    }
-
-                    SymbolsTable.insertToken("number", number);
+                for(Character c : aux)
+                {
+                    toString += c;
+                }
+                    token.setTokenName("number");
+                    token.setLexem(toString);
+                    TokenList.insertToken(token);
                 }
             }
             
@@ -208,13 +246,15 @@ public class LexicalAnalyzer {
                 currentByte++;
                 current = FileReader.getNextChar(currentByte);
             }
+            currentByte--;
+            current = FileReader.getNextChar(currentByte);
+            return id;
         }
         else
         {
+            if(id.isEmpty()) currentByte = startByte;
             return null;
         }
-        if(id.isEmpty()) currentByte = startByte;
-        return id;
     }
             
     private static boolean breakToken(char current) throws FileNotFoundException, IOException
@@ -241,7 +281,12 @@ public class LexicalAnalyzer {
                         {
                             currentByte++;
                             current = FileReader.getNextChar(currentByte);
-                            if(current == ';') return true;
+                            if(current == ';')
+                            {
+                                currentByte--   ;
+                                current = FileReader.getNextChar(currentByte);
+                                return true;
+                            }
                         }
                     }
                 }
@@ -266,12 +311,16 @@ public class LexicalAnalyzer {
             }
             
             if(number.get(number.size()-1) == '.') throw new IOException("Number empty in second member");
+            
+            currentByte--;
+            current = FileReader.getNextChar(currentByte);
+            return number;
         }
         else
         {
             currentByte = startByte;
+            return number;
         }
-        return number;
     }
     
     private static boolean floatToken(char current) throws FileNotFoundException, IOException
@@ -376,7 +425,7 @@ public class LexicalAnalyzer {
         if (REGEX.indexOf(current) >= 0) return current;
         
         currentByte = startByte;
-        return 0;
+        return null;
     }
     private static ArrayList<Character> comparisonToken(char current) throws FileNotFoundException, IOException
     {

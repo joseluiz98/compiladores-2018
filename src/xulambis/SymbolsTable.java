@@ -25,41 +25,9 @@ public class SymbolsTable {
         return table;
     }
     
-    public HashMap<String, List<String>> getTokens() {
-        return tokens;
-    }
-    
-    public void putToken(String[] line) throws Exception
+    public static void insertToken(String key, String lexem) throws Exception
     {
-//        str = str.replaceAll(";"," ; ");
-//        String[] line = str.split("\\s+");
-        List<String> ar = new ArrayList<>();
-        String lastTokenTested = "";
-        
-        for(String lineSemiColonSplitted : line)
-        {
-            lastTokenTested = "";
-            String[] lexemes = lineSemiColonSplitted.split("\\s+");
-            for(String lexem : lexemes)
-            {
-                if(lexem.isEmpty())
-                {
-                    continue;
-                }
-                else
-                {
-                    if(isNumber(lexem)) insertToken("number",lexem);
-                    else if(isPunct(lexem)) insertToken("punct",lexem);
-                    else if(lastTokenTested != null && isPrimitiveType(lastTokenTested)) insertToken("id",lexem);
-                    else if(isReservedWord(lexem)) insertToken("reserved-word",lexem);
-                    if(lexem != "=") lastTokenTested = lexem;
-                }
-            }
-        }
-    }
-    
-    public static void insertToken(String key, String lexem)
-    {
+        System.out.println(key);
         List<String> list = tokens.get(key);
         if(list == null)
         {
@@ -68,7 +36,7 @@ public class SymbolsTable {
         }
         else
         {
-            if(!list.contains(lexem)) list.add(lexem);
+            throw new Exception("Redeclaração da variável " + key);
         }
         tokens.put(key, list);
     }
@@ -83,40 +51,5 @@ public class SymbolsTable {
             for(String element : value)
                 System.out.println ("<" + key + "," + element + ">");
         }
-    }
-    private static boolean isNumber(String str)
-    {
-        try
-        {
-          double d = Double.parseDouble(str);  
-        }  
-        catch(NumberFormatException nfe)  
-        {  
-          return false;  
-        } 
-        return true;
-    }
-    
-    private static boolean isPunct(String str)
-    {
-        return !Character.isLetter(str.charAt(0)) && !Character.isDigit(str.charAt(0));
-    }
-    
-    private static boolean isPrimitiveType(String str)
-    {
-        List<String> primitiveTypes = new ArrayList();
-        primitiveTypes = Arrays.asList("int","float","double","const","bool");
-        
-        if (primitiveTypes.contains(str.toLowerCase())) return true;
-        else return false;
-    }
-    
-    private static boolean isReservedWord(String str)
-    {
-        List<String> reservedWords = new ArrayList();
-        reservedWords = Arrays.asList("while","break","if","true","int","float","double","const","bool");
-        
-        if (reservedWords.contains(str.toLowerCase())) return true;
-        else return false;        
     }
 }
