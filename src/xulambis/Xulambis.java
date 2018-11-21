@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package xulambis;
-
 /**
  *
  * @author aluno
@@ -17,6 +16,7 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
+            
             LexicalAnalyzer.getInstance().analyzeChar();
             
             System.out.println("Tokens do código-fonte\n");
