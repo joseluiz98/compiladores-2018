@@ -8,6 +8,7 @@ package xulambis;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import jdk.nashorn.internal.parser.TokenKind;
 
 /**
  *
@@ -25,11 +26,16 @@ public class SintaticalAnalyzer
         return sintaticalAnalyzer;
     }
     
-    public static void analyzeCode() throws ScriptException
+    public static boolean analyzeCode() throws ScriptException
     {
         if(startAnalysis())
         {
-            bodyAnalysis();
+            if(bodyAnalysis()) return true;
+            else return false;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -50,17 +56,16 @@ public class SintaticalAnalyzer
 
     private static boolean bodyAnalysis() throws ScriptException
     {
-        Token current = TokenList.getTokenAt(currentToken);
-        System.out.println("Analisando: " + current.getLexem());
-        
         int numberOfTokens = TokenList.getTokens().size();
         
         if(currentToken < numberOfTokens)
         {
-            if(curlyBracketClosingToken(current))
+            Token current = TokenList.getTokenAt(currentToken);
+            System.out.println("Analisando: " + current.getLexem());
+        
+            if(curlyBracketToken(current))
             {
-                System.out.println("}");
-                curlyBrackets--;
+                System.out.println("chave");
                 bodyAnalysis();
             }
             else if(ifToken(current))
@@ -81,7 +86,15 @@ public class SintaticalAnalyzer
             currentToken++;
             return bodyAnalysis();
         }
-        return true;
+        else
+        {
+            if(curlyBrackets == 0) return true;
+            else
+            {
+                return false;
+            }
+        }
+        
     }
     
     private static boolean comparisonToken(Token current)
@@ -116,21 +129,23 @@ public class SintaticalAnalyzer
             {
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
-                if(current.getTokenName()== "assignment")
+                if(current.getTokenName() == "assignment")
                 {
-                    String aux = current.getTokenName();
-                    while(aux != ";")
+                    currentToken++;
+                    current = TokenList.getTokenAt(currentToken);
+                    
+                    String aux = current.getLexem();
+                    while(!";".equals(aux))
                     {
                         mathExpression += aux;
                         currentToken++;
                         current = TokenList.getTokenAt(currentToken);
-                        aux = current.getTokenName();
+                        aux = current.getLexem();
                     }
                     
-                    mathExpression = mathExpression.replaceAll("[^a-zA-Z]", "1");
+                    mathExpression = mathExpression.replaceAll("[a-zA-Z]", "1");
                     ScriptEngineManager mgr = new ScriptEngineManager();
                     ScriptEngine engine = mgr.getEngineByName("JavaScript");
-                    
                     engine.eval(mathExpression);
                     return true;
                 }
@@ -183,33 +198,41 @@ public class SintaticalAnalyzer
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
                 if(comparisonToken(current))
-               {
-                   currentToken++;
-                    current = TokenList.getTokenAt(currentToken);
-                   if(")".equals(current.getLexem()))
-                    {
-                        currentToken++;
-                        current = TokenList.getTokenAt(currentToken);
-                        if("{".equals(current.getLexem()))
-                        {
-                            curlyBrackets++;
-                            currentToken++;
-                            return true;
-                        }
-                    }
-                }
+                {
+                    currentToken++;
+                     current = TokenList.getTokenAt(currentToken);
+                    if(")".equals(current.getLexem()))
+                     {
+                         currentToken++;
+                         current = TokenList.getTokenAt(currentToken);
+                         if("{".equals(current.getLexem()))
+                         {
+                             curlyBrackets++;
+                             currentToken++;
+                             return true;
+                         }
+                     }
+                 }
             }   
         }
         return false;
     }
 
-    private static boolean curlyBracketClosingToken(Token current) {
+    private static boolean curlyBracketToken(Token current) {
         int startToken = currentToken;
-        if("}".equals(current.getLexem()))
+        if("{".equals(current.getLexem()))
         {
+            curlyBrackets++;
             currentToken++;
             return true;
         }
+        else if("}".equals(current.getLexem()))
+        {
+            curlyBrackets--;
+            currentToken++;
+            return true;
+        }
+        currentToken = startToken;
         return false;
     }
 }

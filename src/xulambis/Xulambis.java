@@ -26,7 +26,15 @@ public class Xulambis {
             SymbolsTable.getInstance().printTokens();
             
             System.out.println("Analisador sintático código-fonte\n");
-            SintaticalAnalyzer.getInstance().analyzeCode();
+            
+            if(SintaticalAnalyzer.getInstance().analyzeCode())
+            {
+                System.out.println("Código correto");
+            }
+            else
+            {
+                System.out.println("Código errado");
+            }
         }
         catch(Exception e)
         {
