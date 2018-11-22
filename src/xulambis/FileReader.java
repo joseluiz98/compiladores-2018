@@ -22,7 +22,7 @@ public class FileReader
     private static FileInputStream reader;
     private static FileReader fileReader;
     private static RandomAccessFile raf;
-    private static String filePath = "teste.xul";
+    private static String filePath = "teste5.xul";
     private File file = new File(filePath);
     private List<String> fileContent = new ArrayList();
     private SymbolsTable lexems = new SymbolsTable();
