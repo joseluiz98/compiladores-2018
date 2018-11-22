@@ -24,6 +24,9 @@ public class Xulambis {
             
             System.out.println("Tabela de Símbolos do código-fonte\n");
             SymbolsTable.getInstance().printTokens();
+            
+            System.out.println("Analisador sintático código-fonte\n");
+            SintaticalAnalyzer.getInstance().analyzeCode();
         }
         catch(Exception e)
         {
