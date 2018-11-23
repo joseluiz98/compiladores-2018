@@ -438,7 +438,6 @@ public class LexicalAnalyzer {
         int startByte = currentByte;
         if(current == '=')
         {
-            currentByte++;
             current = FileReader.getNextChar(currentByte);
             return true;
         }

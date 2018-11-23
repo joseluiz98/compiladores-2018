@@ -94,7 +94,7 @@ public class SintaticalAnalyzer
                 lastTokenFound = "assign";
                 bodyAnalysis();
             }
-            else if(varDeclarationToken(current))
+            else if(isVarDeclaration(current))
             {
                 System.out.println("var declaration");
                 lastTokenFound = "var declaration";
@@ -176,16 +176,18 @@ public class SintaticalAnalyzer
                 mathExpression = mathExpression.replaceAll("[a-zA-Z]", "1");
                 ScriptEngineManager mgr = new ScriptEngineManager();
                 ScriptEngine engine = mgr.getEngineByName("JavaScript");
-                engine.eval(mathExpression);
                 
-                currentToken++;
-                return true;
+                if(engine.eval(mathExpression) != null)
+                {
+                    currentToken++;
+                    return true;
+                }
             }
         }
         return false;
     }
     
-    private static boolean varDeclarationToken(Token current) throws ScriptException
+    private static boolean isVarDeclaration(Token current) throws ScriptException
     {
         String mathExpression = "";
         int startToken = currentToken;
