@@ -25,7 +25,7 @@ public class LexicalAnalyzer {
         return lexicalAnalyzer;
     }
 
-    static boolean analyzeChar() throws IOException, Exception
+    public static boolean analyzeChar() throws IOException, Exception
     {
         char current = FileReader.getInstance().getNextChar(currentByte);
         
@@ -35,7 +35,11 @@ public class LexicalAnalyzer {
             ArrayList<Character> functionReturn;
             Character punct;
             
-            if(ifToken(current))
+            if(isComment(current))
+            {
+                // do nothing
+            }
+            else if(ifToken(current))
             {
                 token.setTokenName("reserved-word");
                 token.setLexem("if");
@@ -151,6 +155,30 @@ public class LexicalAnalyzer {
         return true;
     }
 
+    private static boolean isComment(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == '/')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            
+            if(current == '/')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                
+                while(current != '\n')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                }
+                return true;
+            }
+        }
+        currentByte = startByte;
+        return false;
+    }
     private static boolean ifToken(char current) throws FileNotFoundException, IOException
     {
         int startByte = currentByte;
