@@ -31,12 +31,8 @@ public class SintaticalAnalyzer
         if(startAnalysis())
         {
             if(bodyAnalysis()) return true;
-            else return false;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     private static boolean startAnalysis()
@@ -251,31 +247,31 @@ public class SintaticalAnalyzer
     
     private static boolean whileToken(Token current) throws ScriptException
     {
-//        FALTA TRATAR WHILE(TRUE) OU WHILE(FALSE)
+    //        FALTA TRATAR WHILE(TRUE) OU WHILE(FALSE)
         int startToken = currentToken;
         if("while".equals(current.getLexem()))
         {
             currentToken++;
             current = TokenList.getTokenAt(currentToken);
             System.out.print(current.getLexem() + " ");
-            
+
             if("(".equals(current.getLexem()))
             {
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
                 System.out.print(current.getLexem() + " ");
-                
+
                 if(comparisonToken(current))
                 {
                     currentToken++;
                      current = TokenList.getTokenAt(currentToken);
-                     
+
                     if(")".equals(current.getLexem()))
                      {
                          currentToken++;
                          current = TokenList.getTokenAt(currentToken);
                          System.out.print(current.getLexem() + " ");
-                         
+
                          if("{".equals(current.getLexem()))
                          {
                              curlyBrackets++;

@@ -122,7 +122,8 @@ public class LexicalAnalyzer {
                     TokenList.insertToken(token);
                     
                     String idType = previousTokenRead.getLexem();
-                    SymbolsTable.insertToken(varName, idType);
+                    SymbolsTable.getInstance().insertToken(varName, idType);
+                    //SymbolsTable.insertToken(varName, idType);
                 }
                 else
                 {

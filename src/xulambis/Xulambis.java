@@ -29,7 +29,9 @@ public class Xulambis {
             
             if(SintaticalAnalyzer.getInstance().analyzeCode())
             {
-                System.out.println("Código correto");
+                System.out.println("\n\nAnalisando sematicamente");
+                if(SemanticalAnalyzer.getInstance().analyzeCode()) 
+                    System.out.println("Código correto");
             }
             else
             {

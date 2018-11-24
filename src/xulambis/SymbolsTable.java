@@ -5,9 +5,7 @@
  */
 package xulambis;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +14,7 @@ import java.util.Map;
  */
 public class SymbolsTable {
     private static SymbolsTable table;
-    private static HashMap<String, List<String>> tokens = new HashMap<>();
+    private static HashMap<String, Identificador> tokens = new HashMap<>();
 
     public static SymbolsTable getInstance()
     {
@@ -24,10 +22,19 @@ public class SymbolsTable {
         return table;
     }
     
-    public static void insertToken(String key, String lexem) throws Exception
+    public boolean insertToken(String key, String tipo) throws Exception
     {
         System.out.println(key);
-        List<String> list = tokens.get(key);
+        Identificador id = tokens.get(key);
+        if(id == null)
+        {
+            tokens.put(key, new Identificador(tipo, true));
+            //Nao tinha na hash
+            return true;
+        }
+        //id já declarado.
+        return false;
+        /*List<String> list = tokens.get(key);
         if(list == null)
         {
             list = new ArrayList();
@@ -36,19 +43,52 @@ public class SymbolsTable {
         else
         {
             throw new Exception("Redeclaração da variável " + key);
-        }
-        tokens.put(key, list);
+        }*/
+        
     }
     
     public static void printTokens()
     {
-        for (Map.Entry<String, List<String>> entry : tokens.entrySet())
+        for (Map.Entry<String, Identificador> entry : tokens.entrySet())
         {
             String key = entry.getKey();
-            List<String> value = entry.getValue();
+            Identificador id = entry.getValue();
             
-            for(String element : value)
-                System.out.println ("<" + key + "," + element + ">");
+            System.out.println ("<" + key + "," + id.getTipo() +"," +
+                    ((id.isDeclarada()? "Sim" : "Não" ))+ ">");
         }
+    }
+
+    public static HashMap<String, Identificador> getTokens() {
+        return tokens;
+    }
+    
+    //Classe Interna
+    public class Identificador{
+        private String tipo;
+        private boolean declarada = false;
+
+        public Identificador(String tipo, boolean declarada) {
+            this.tipo = tipo;
+            this.declarada = declarada;
+        }
+
+        public String getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(String tipo) {
+            this.tipo = tipo;
+        }
+
+        public boolean isDeclarada() {
+            return declarada;
+        }
+
+        public void setDeclarada(boolean declarada) {
+            this.declarada = declarada;
+        }
+        
+        
     }
 }
