@@ -5,6 +5,11 @@
  */
 package xulambis;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import static javafx.scene.input.KeyCode.A;
+import static javafx.scene.input.KeyCode.C;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -16,6 +21,7 @@ import javax.script.ScriptException;
 public class SemanticalAnalyzer {
     private static SemanticalAnalyzer semanticalAnalyzer;
     private static int currentToken = 1;
+    private static int curlyBrackets = 0;
     
     public static SemanticalAnalyzer getInstance()
     {
@@ -49,6 +55,11 @@ public class SemanticalAnalyzer {
             else if(whileOrIf(current))
             {
                 System.out.println("while or if");
+                analyzeCode();
+            }
+            else if(isDelimiter(current))
+            {
+                System.out.println("delimiter");
                 analyzeCode();
             }
         }
@@ -161,7 +172,6 @@ public class SemanticalAnalyzer {
                     return true;
                 else
                 {
-                    System.out.println("cai aqui");
                     return true;
                 }
             }
@@ -211,22 +221,52 @@ public class SemanticalAnalyzer {
                 {
                     currentToken++;
                      current = TokenList.getTokenAt(currentToken);
+                     System.out.print(current.getLexem() + " ");
 
                     if(")".equals(current.getLexem()))
-                     {
-                         currentToken++;
-                         current = TokenList.getTokenAt(currentToken);
-                         System.out.print(current.getLexem() + " ");
-
-                         if("{".equals(current.getLexem()))
-                         {
-                             currentToken++;
-                             return true;
-                         }
-                     }
+                    {
+                        currentToken++;
+                        current = TokenList.getTokenAt(currentToken);
+                        System.out.print(current.getLexem() + " ");
+                        return true;
+                    }
                  }
             }   
         }
+        return false;
+    }
+
+    private static boolean isDelimiter(Token current) {
+        ///System.out.println("cai");
+        ArrayList<String> delimiters = new ArrayList<>();
+        delimiters.add("{");
+        
+        if(delimiters.contains(current.getLexem()))
+        {
+            currentToken++;
+            current = TokenList.getTokenAt(currentToken);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private static boolean curlyBracketToken(Token current)
+    {
+        int startToken = currentToken;
+        if("{".equals(current.getLexem()))
+        {
+            curlyBrackets++;
+            currentToken++;
+            return true;
+        }
+        else if("}".equals(current.getLexem()))
+        {
+            curlyBrackets--;
+            currentToken++;
+            return true;
+        }
+        currentToken = startToken;
         return false;
     }
 }

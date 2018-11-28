@@ -16,6 +16,7 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
+             System.setProperty("file.encoding", "UTF-8");
             
             LexicalAnalyzer.getInstance().analyzeChar();
             
