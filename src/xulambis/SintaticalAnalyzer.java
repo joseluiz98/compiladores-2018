@@ -149,7 +149,7 @@ public class SintaticalAnalyzer
         int startToken = currentToken;
         Token nextToken = TokenList.getTokenAt(currentToken+1);
         
-        if(current.getTokenName()== "identifier")
+        if(current.getTokenName() == "identifier")
         {
             currentToken++;
             current = TokenList.getTokenAt(currentToken);
