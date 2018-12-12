@@ -36,11 +36,11 @@ public class LexicalAnalyzer {
     }
     
     private static boolean startAnalysis() throws IOException, Exception
-    {
-        char current = FileReader.getInstance().getNextChar(currentByte);
-        
-        if(currentByte <= FileReader.getLastByte())
+    {        
+        if(currentByte < FileReader.getInstance().getLastByte())
         {
+            char current = FileReader.getInstance().getNextChar(currentByte);
+            
             if(Character.isSpace(current) || current == '\n')
             {
                 currentByte++;
