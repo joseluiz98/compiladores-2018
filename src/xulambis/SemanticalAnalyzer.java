@@ -237,14 +237,12 @@ public class SemanticalAnalyzer {
     }
 
     private static boolean isDelimiter(Token current) {
-        ///System.out.println("cai");
         ArrayList<String> delimiters = new ArrayList<>();
         delimiters.add("{");
         
         if(delimiters.contains(current.getLexem()))
         {
             currentToken++;
-            current = TokenList.getTokenAt(currentToken);
             return true;
         }
         

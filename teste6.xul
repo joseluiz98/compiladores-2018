@@ -1,6 +1,5 @@
 {
 int i; int j; float x; bool y;
-bool i;
 j = 10; i = 20;
 i = i + j;
 x = 13.8;

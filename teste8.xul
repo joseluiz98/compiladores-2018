@@ -7,9 +7,8 @@ while ( i ) {
 i = i + j;
 if ( i < j ){
   j=y;
-  while(j>=10) {
+  while(j>=10)
     i = i+true;
-	}
 }
 }
 }
