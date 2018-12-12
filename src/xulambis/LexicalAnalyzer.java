@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.script.ScriptException;
 
 /**
  *
@@ -25,86 +26,108 @@ public class LexicalAnalyzer {
         return lexicalAnalyzer;
     }
 
-    public static boolean analyzeChar() throws IOException, Exception
+    public static boolean analyzeCode() throws ScriptException, Exception
+    {
+        if(startAnalysis())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private static boolean startAnalysis() throws IOException, Exception
     {
         char current = FileReader.getInstance().getNextChar(currentByte);
-        System.out.println("q " + current);
         
-        if(current != '\f')
+        if(currentByte <= FileReader.getLastByte())
         {
+            if(Character.isSpace(current) || current == '\n')
+            {
+                currentByte++;
+                return startAnalysis();
+            }
+            System.out.println("Analisando '" + current + "'");
             Token token = new Token();
             ArrayList<Character> functionReturn;
             Character punct;
             
-            if(isComment(current))
+            if(isWhitespace(current))
             {
                 // do nothing just call me again
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(ifToken(current))
             {
+                System.out.println("if");
                 token.setTokenName("reserved-word");
                 token.setLexem("if");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(whileToken(current))
             {
+                System.out.println("while");
                 token.setTokenName("reserved-word");
                 token.setLexem("while");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(intToken(current))
             {
+                System.out.println("int");
                 token.setTokenName("primitive-type");
                 token.setLexem("int");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(floatToken(current))
             {
+                System.out.println("float");
                 token.setTokenName("primitive-type");
                 token.setLexem("float");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(boolToken(current))
             {
+                System.out.println("bool");
                 token.setTokenName("primitive-type");
                 token.setLexem("bool");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(trueToken(current))
             {
+                System.out.println("true");
                 token.setTokenName("reserved-word");
                 token.setLexem("true");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(breakToken(current))
             {
+                System.out.println("break");
                 token.setTokenName("reserved-word");
                 token.setLexem("break");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if((punct = punctuationToken(current)) != null)
             {
+                System.out.println("punct");
                 token.setTokenName("delimiter");
                 token.setLexem(punct.toString());
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if((functionReturn = comparisonToken(current)) != null)
             {
@@ -119,18 +142,20 @@ public class LexicalAnalyzer {
                 token.setLexem(toString);
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if(assignmentToken(current))
             {
+                System.out.println("assign");
                 token.setTokenName("assignment");
                 token.setLexem("=");
                 TokenList.insertToken(token);
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
             else if((functionReturn = idToken(current)) != null)
             {
+                System.out.println("identifier");
                 String varName = "";
                 for(Character c : functionReturn)
                 {
@@ -154,16 +179,18 @@ public class LexicalAnalyzer {
                     token.setLexem(varName);
                     TokenList.insertToken(token);
                 }
+                currentByte++;
+                return startAnalysis();
             }
-            else
+            else if((functionReturn = numberToken(current)) != null)
             {
-                List<Character> aux = numberToken(current);
-                if(!aux.isEmpty())
+                System.out.println("number");
+                if(!functionReturn.isEmpty())
                 {
                     
                 String toString = "";
 
-                for(Character c : aux)
+                for(Character c : functionReturn)
                 {
                     toString += c;
                 }
@@ -172,16 +199,24 @@ public class LexicalAnalyzer {
                     TokenList.insertToken(token);
                 }
                 currentByte++;
-                analyzeChar();
+                return startAnalysis();
             }
+            
             return false;
         }
         return true;
     }
 
-    private static boolean isComment(char current) throws FileNotFoundException, IOException
+    private static boolean isWhitespace(char current) throws FileNotFoundException, IOException
     {
         int startByte = currentByte;
+        
+        if(Character.isSpace(current))
+        {
+            currentByte++;
+            return true;
+        }
+        
         if(current == '/')
         {
             currentByte++;
@@ -236,10 +271,12 @@ public class LexicalAnalyzer {
             current = FileReader.getNextChar(currentByte);
             if(current == 'n')
             {
+                System.out.println("Analisando '" + current + "'");
                 currentByte++;
                 current = FileReader.getNextChar(currentByte);
                 if(current == 't')
                 {
+                    System.out.println("Analisando '" + current + "'");
                     currentByte++;
                     current = FileReader.getNextChar(currentByte);
                     if(current == ' ') return true;
@@ -347,10 +384,10 @@ public class LexicalAnalyzer {
         return false;
     }
     
-    private static List<Character> numberToken(char current) throws IOException
+    private static ArrayList<Character> numberToken(char current) throws IOException
     {
         int startByte = currentByte;
-        List<Character> number = new ArrayList<>();
+        ArrayList<Character> number = new ArrayList<>();
         
         if(current >= '0' && current <= '9')
         {
@@ -364,13 +401,12 @@ public class LexicalAnalyzer {
             if(number.get(number.size()-1) == '.') throw new IOException("Number empty in second member");
             
             currentByte--;
-            current = FileReader.getNextChar(currentByte);
             return number;
         }
         else
         {
             currentByte = startByte;
-            return number;
+            return null;
         }
     }
     
@@ -462,14 +498,12 @@ public class LexicalAnalyzer {
         int startByte = currentByte;
         if(current == '=')
         {
-            current = FileReader.getNextChar(currentByte);
             return true;
         }
         return false;
     }
     private static Character punctuationToken(char current) throws FileNotFoundException, IOException
     {
-        System.out.println("is punct? " + current);
         final String REGEX="[^.%*$#@?^!&'|/\\\\~\\[\\]{}+-;\"-()]*";
         
         int startByte = currentByte;
@@ -493,9 +527,7 @@ public class LexicalAnalyzer {
             current = FileReader.getNextChar(currentByte);
             if(current == '=')
             {
-                comparisonToken.add(current);                
-                currentByte++;
-                current = FileReader.getNextChar(currentByte);
+                comparisonToken.add(current);
             }
             return comparisonToken;
         }

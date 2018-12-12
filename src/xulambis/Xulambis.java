@@ -16,9 +16,13 @@ public class Xulambis {
     public static void main(String[] args) {
         try
         {
-             System.setProperty("file.encoding", "UTF-8");
+            System.setProperty("file.encoding", "UTF-8");
             
-            LexicalAnalyzer.getInstance().analyzeChar();
+            if(!LexicalAnalyzer.getInstance().analyzeCode())
+            {
+                System.out.println("Erro na análise léxica");
+                System.exit(0);
+            }
             
             System.out.println("Tokens do código-fonte\n");
             TokenList.getInstance().printTokens();
