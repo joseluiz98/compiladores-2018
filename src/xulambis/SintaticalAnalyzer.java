@@ -121,35 +121,29 @@ public class SintaticalAnalyzer
     
     private static boolean comparisonToken(Token current) throws ScriptException
     {
-        int parenthesisCounter = 0;
-        String mathExpression = "";
+        int parenthesisCounter = 1;
+        String mathExpression = "(";
         int startToken = currentToken;
         
+        
+        
         String aux = current.getLexem();
-        if("(".equals(current.getLexem()))
+        do
         {
-            do
-            {
-                if("(".equals(current.getLexem())) parenthesisCounter++;
-                else if(")".equals(current.getLexem())) parenthesisCounter--;
-                
-                mathExpression += aux;
-                currentToken++;
-                current = TokenList.getTokenAt(currentToken);
-                aux = current.getLexem();
-                System.out.println(aux + " ");
-            } while(parenthesisCounter != 0);
-        }
-        else
-        {
-            return false;
-        }
+            if("(".equals(current.getLexem())) parenthesisCounter++;
+            else if(")".equals(current.getLexem())) parenthesisCounter--;
+
+            mathExpression += aux;
+            currentToken++;
+            current = TokenList.getTokenAt(currentToken);
+            aux = current.getLexem();
+            System.out.println(aux + " ");
+        } while(parenthesisCounter != 0);
 
         mathExpression = mathExpression.replaceAll("[a-zA-Z]", "1");
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         
-        System.out.println("mano, funciona plmdds");
         System.out.println(mathExpression);
         
         if(engine.eval(mathExpression) != null)

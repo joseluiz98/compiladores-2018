@@ -4,7 +4,7 @@ j = 10; i = 20;
 i = i + j;
 k = 13.8;
 y = true;
-while ((x>= 230,0) ) {
+while ((x>= 230.0) ) {
 i = i + j;
 if ( i < j ) break;
 }
