@@ -111,6 +111,15 @@ public class LexicalAnalyzer {
                 currentByte++;
                 return startAnalysis();
             }
+            else if(falseToken(current))
+            {
+                System.out.println("false");
+                token.setTokenName("reserved-word");
+                token.setLexem("false");
+                TokenList.insertToken(token);
+                currentByte++;
+                return startAnalysis();
+            }
             else if(breakToken(current))
             {
                 System.out.println("break");
@@ -496,6 +505,36 @@ public class LexicalAnalyzer {
         }
         currentByte = startByte;
         return false;
+    }
+    
+    private static boolean falseToken(char current) throws FileNotFoundException, IOException
+    {
+        int startByte = currentByte;
+        if(current == 'f')
+        {
+            currentByte++;
+            current = FileReader.getNextChar(currentByte);
+            if(current == 'a')
+            {
+                currentByte++;
+                current = FileReader.getNextChar(currentByte);
+                if(current == 'l')
+                {
+                    currentByte++;
+                    current = FileReader.getNextChar(currentByte);
+                    if(current == 's')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == 'e')
+                            return true;
+                    }
+                }
+            }
+        }
+        
+        currentByte = startByte;
+        return false;        
     }
     private static boolean assignmentToken(char current) throws FileNotFoundException, IOException
     {

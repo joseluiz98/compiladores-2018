@@ -59,6 +59,17 @@ public class SymbolsTable {
         }
     }
 
+    public static Identificador getToken(String lexem)
+    {
+        return SymbolsTable.getTokens().get(lexem);
+    }
+    public static boolean isDeclared(String lexem)
+    {
+        Identificador id = getToken(lexem);
+        if(id != null && id.isDeclarada())
+            return true;
+        return false;
+    }
     public static HashMap<String, Identificador> getTokens() {
         return tokens;
     }

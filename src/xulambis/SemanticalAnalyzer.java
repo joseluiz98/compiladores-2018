@@ -6,10 +6,6 @@
 package xulambis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import static javafx.scene.input.KeyCode.A;
-import static javafx.scene.input.KeyCode.C;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -31,7 +27,7 @@ public class SemanticalAnalyzer {
     
     public static boolean analyzeCode() throws ScriptException, Exception
     {
-        int numberOfTokens = TokenList.getTokens().size();
+        int numberOfTokens = TokenList.getTokens().size()-1;
         
         Token current = TokenList.getTokenAt(currentToken);
         System.out.println();
@@ -45,7 +41,6 @@ public class SemanticalAnalyzer {
                 ///SymbolsTable
                 analyzeCode();
             }
-            
             else if(isAssignment(current))
             {
                 System.out.println("assignment");
@@ -62,8 +57,14 @@ public class SemanticalAnalyzer {
                 System.out.println("delimiter");
                 analyzeCode();
             }
+            else if("reserved-word".equals(current.getTokenName()))
+            {
+                System.out.println("reserved-word");
+                currentToken++;
+                analyzeCode();
+            }
         }
-        return false;
+        return true;
     }
     
     private static boolean isVarDeclaration(Token current) throws ScriptException
@@ -96,23 +97,22 @@ public class SemanticalAnalyzer {
         return false;
     }
     
-    private static boolean isAssignment(Token current) throws ScriptException
+    private static boolean isAssignment(Token current) throws ScriptException, Exception
     {
         String mathExpression = "";
         int startToken = currentToken;
         Token nextToken = TokenList.getTokenAt(currentToken+1);
-        String id = current.getLexem();
-        
+        Token varToStoreResults = current;
         
         if(current.getTokenName() == "identifier")
         {
-            if(SymbolsTable.getTokens().get(id) == null)
+            if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()) == null)
             {
                 System.out.println("var not declared ");
                 return false;
             }
                     
-            if(SymbolsTable.getTokens().get(id).isDeclarada())
+            if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).isDeclarada())
             {
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
@@ -121,25 +121,45 @@ public class SemanticalAnalyzer {
                 {
                     currentToken++;
                     current = TokenList.getTokenAt(currentToken);
-                    System.out.print(current.getLexem() + " ");
-
-                    String aux = current.getLexem();
-                    while(!";".equals(aux))
+                    ArrayList<String> memberTypes = new ArrayList();
+                    
+                    while(!";".equals(current.getLexem()))
                     {
-                        mathExpression += aux;
+                        System.out.println(current.getLexem() + " ");
+                        // Se for um id, faça
+                        if("identifier".equals(current.getTokenName()))
+                        {
+                            if(SymbolsTable.isDeclared(current.getLexem()))
+                            {
+                                if("float".equals(SymbolsTable.getTokens().get(current.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(current.getLexem()).getTipo()))
+                            {
+                                memberTypes.add(SymbolsTable.getTokens().get(current.getLexem()).getTipo());                                
+                            }
+                            else throw new Exception("Invalid operand types on assignment! Expect int or float but got " + SymbolsTable.getTokens().get(current.getLexem()).getTipo());
+                            }
+                            else throw new Exception("Var " + current.getLexem() + " not declared.");
+                        }
+                        
                         currentToken++;
                         current = TokenList.getTokenAt(currentToken);
-                        aux = current.getLexem();
                     }
-
-                    mathExpression = mathExpression.replaceAll("[a-zA-Z]", "1");
-                    ScriptEngineManager mgr = new ScriptEngineManager();
-                    ScriptEngine engine = mgr.getEngineByName("JavaScript");
-
-                    if(engine.eval(mathExpression) != null)
+                    
+                    // Se a variável a armazenar o resultado é bool, faça
+                    if("bool".equals(SymbolsTable.getToken(varToStoreResults.getLexem()).getTipo()))
                     {
-                        currentToken++;
-                        return true;
+                        current = TokenList.getTokenAt(currentToken-1);
+                        if("true".equals(current.getLexem()) || "false".equals(current.getLexem()))
+                            return true;
+                        else if(SymbolsTable.getToken(current.getLexem()).isDeclarada() && "bool".equals(SymbolsTable.getToken(current.getLexem()).getTipo()))
+                            return true;
+                    }                        
+                    // Senão, a variável é numérica, portanto
+                    // verifique se x é de um tipo numérico
+                    else
+                    {
+                        if("float".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()))
+                            return true;
+                        else throw new Exception("Invalid store var type, expect float or int but got a " + SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo());
                     }
                 }
             }
@@ -167,8 +187,12 @@ public class SemanticalAnalyzer {
             currentToken++;
             current = TokenList.getTokenAt(currentToken);
             aux = current.getLexem();
-            System.out.println(aux + " ");
+            
+            if(parenthesisCounter != 0) System.out.println(aux + " ");
         } while(parenthesisCounter != 0);
+            
+        currentToken--;
+        current = TokenList.getTokenAt(currentToken);
         
         // Remove o último parênteses, que é colocado desnecessariamente na lista
         comparison.remove(comparison.size()-1);
@@ -177,7 +201,6 @@ public class SemanticalAnalyzer {
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         
-        System.out.println("exp " + mathExpression);
         int nOfMembersInComparison = comparison.size();
         
         // Se só existe um membro na comparação: while(true) ou while(false)
@@ -190,7 +213,6 @@ public class SemanticalAnalyzer {
                 // esse id foi declarado
                 if(SymbolsTable.getTokens().get(firstMember.getLexem()).isDeclarada())
                 {
-                    System.out.println(SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo());
                     // E é do tipo boolean, é uma comparação válida
                     if("bool".equals(SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo())) return true;
                     else throw new Exception("While or If with one member expect bool type. Got a " + SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() + ".");
@@ -238,9 +260,13 @@ public class SemanticalAnalyzer {
                                     // Se os membros são bool, então trate o operador
                                     if("==".equals(operator.getLexem()) || "!=".equals(operator.getLexem()))
                                         return true;
+                                    throw new Exception("Invalid comparison between two bool vars.");
                                 }
+                                return true;
                             }
                         }
+                        else throw new Exception("Foribdden comparison between " + SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() + " and " 
+                                + SymbolsTable.getTokens().get(secondMember.getLexem()).getTipo());
                     }
                     // Caso o segundo membro não seja um identificador, ele tem de ser um número,
                     // pois não existe String na xulambis
@@ -277,20 +303,12 @@ public class SemanticalAnalyzer {
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
                 System.out.print(current.getLexem() + " ");
-
+                
                 if(comparisonToken(current))
                 {
                     currentToken++;
                      current = TokenList.getTokenAt(currentToken);
-                     System.out.print(current.getLexem() + " ");
-
-                    if(")".equals(current.getLexem()))
-                    {
-                        currentToken++;
-                        current = TokenList.getTokenAt(currentToken);
-                        System.out.print(current.getLexem() + " ");
-                        return true;
-                    }
+                     return true;
                 }
             }   
         }
@@ -300,6 +318,8 @@ public class SemanticalAnalyzer {
     private static boolean isDelimiter(Token current) {
         ArrayList<String> delimiters = new ArrayList<>();
         delimiters.add("{");
+        delimiters.add("}");
+        delimiters.add(";");
         
         if(delimiters.contains(current.getLexem()))
         {
@@ -327,5 +347,14 @@ public class SemanticalAnalyzer {
         }
         currentToken = startToken;
         return false;
+    }
+    
+    private static boolean isNumeric(String str)
+    {
+        for (char c : str.toCharArray())
+        {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 }
