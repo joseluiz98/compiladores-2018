@@ -113,7 +113,8 @@ public class SintaticalAnalyzer
             if(curlyBrackets == 0) return true;
             else
             {
-                return false;
+                if(curlyBrackets > 0) throw new Exception("Problema com as chaves, parece uqe você abriu uma e não fechou.");
+                else throw new Exception("Problema com as chaves, parece uqe você fechou uma sem ter aberto anteriormente.");
             }
         }
         
@@ -144,13 +145,11 @@ public class SintaticalAnalyzer
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         
-        System.out.println(mathExpression);
-        
         if(engine.eval(mathExpression) != null)
         {
             return true;
         }
-        
+        currentToken = startToken;
         return false;
     }
     
@@ -241,7 +240,6 @@ public class SintaticalAnalyzer
                 
                if(comparisonToken(current))
                {
-                    currentToken++;
                     return true;
                 }
             }   
@@ -259,7 +257,7 @@ public class SintaticalAnalyzer
             currentToken++;
             current = TokenList.getTokenAt(currentToken);
             System.out.print(current.getLexem() + " ");
-
+            
             if("(".equals(current.getLexem()))
             {
                 currentToken++;
@@ -268,16 +266,7 @@ public class SintaticalAnalyzer
 
                 if(comparisonToken(current))
                 {
-                    currentToken++;
-                    current = TokenList.getTokenAt(currentToken);
-                    System.out.print(current.getLexem() + " ");
-                    
-                    if("{".equals(current.getLexem()))
-                    {
-                        curlyBrackets++;
-                        currentToken++;
-                        return true;
-                    }
+                    return true;
                  }
             }   
         }

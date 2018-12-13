@@ -310,8 +310,12 @@ public class LexicalAnalyzer {
                         {
                             currentByte++;
                             current = FileReader.getNextChar(currentByte);
-                            System.out.println(current);
-                            if(current == ' ' || current == '(') return true;
+                            
+                            if(Character.isSpace(current) || current == '(')
+                            {
+                                currentByte--;
+                                return true;
+                            }
                         }
                     }
                 }
