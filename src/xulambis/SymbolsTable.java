@@ -88,7 +88,5 @@ public class SymbolsTable {
         public void setDeclarada(boolean declarada) {
             this.declarada = declarada;
         }
-        
-        
     }
 }
