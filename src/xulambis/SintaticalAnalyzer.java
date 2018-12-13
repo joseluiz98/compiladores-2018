@@ -126,8 +126,6 @@ public class SintaticalAnalyzer
         String mathExpression = "(";
         int startToken = currentToken;
         
-        
-        
         String aux = current.getLexem();
         do
         {

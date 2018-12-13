@@ -147,57 +147,35 @@ public class SemanticalAnalyzer {
         return false;
     }
     
-    private static boolean comparisonToken(Token current)
+    private static boolean comparisonToken(Token current) throws ScriptException
     {
+        int parenthesisCounter = 1;
+        String mathExpression = "(";
         int startToken = currentToken;
-        Token operandToken = TokenList.getTokenAt(currentToken+1);
         
-        if("identifier".equals(current.getTokenName()) && ")".equals(operandToken.getLexem()))
+        String aux = current.getLexem();
+        do
         {
-            if(SymbolsTable.getTokens().get(current.getLexem()).getTipo() == "bool")
-            {
-                return true;
-            }
-        }
-        else if(current.getTokenName() == "identifier" && operandToken.getTokenName()== "comparison")
-        {
-            String firstOperandType = SymbolsTable.getTokens().get(current.getLexem()).getTipo();
-            currentToken+=2;
+            if("(".equals(current.getLexem())) parenthesisCounter++;
+            else if(")".equals(current.getLexem())) parenthesisCounter--;
+
+            mathExpression += aux;
+            currentToken++;
             current = TokenList.getTokenAt(currentToken);
-            String secondOperandType = SymbolsTable.getTokens().get(current.getLexem()).getTipo();
-            
-            if(firstOperandType == secondOperandType)
-            {
-                if(firstOperandType == "bool" && (operandToken.getLexem() == "==" || operandToken.getLexem() == "!="))
-                    return true;
-                else
-                {
-                    return true;
-                }
-            }
+            aux = current.getLexem();
+            System.out.println(aux + " ");
+        } while(parenthesisCounter != 0);
+
+        mathExpression = mathExpression.replaceAll("[a-zA-Z]", "1");
+        ScriptEngineManager mgr = new ScriptEngineManager();
+        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        
+        System.out.println("exp " + mathExpression);
+        if(engine.eval(mathExpression) != null)
+        {
+            return true;
         }
-//        if(current.getTokenName() == "identifier" || current.getTokenName()== "number")
-//        {
-//            currentToken++;
-//            current = TokenList.getTokenAt(currentToken);
-//            System.out.print(current.getLexem());
-//            if(current.getTokenName() == "comparison")
-//            {
-//                currentToken++;
-//                current = TokenList.getTokenAt(currentToken);
-//                System.out.print(current.getLexem());
-//                
-//                if(current.getTokenName() == "identifier" || current.getTokenName() == "number")
-//                {
-//                    return true;
-//                }
-//            }
-//            else if(")".equals(current.getLexem()))
-//            {
-//                currentToken--;
-//                return true;
-//            }
-//        }
+        currentToken = startToken;
         return false;
     }
     
@@ -230,7 +208,7 @@ public class SemanticalAnalyzer {
                         System.out.print(current.getLexem() + " ");
                         return true;
                     }
-                 }
+                }
             }   
         }
         return false;
