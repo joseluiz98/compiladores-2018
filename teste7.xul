@@ -5,7 +5,7 @@ i = 20;
 x = 13.8;
 while ( y ) {
   j=y;
-  while(j != true)
+  while(j == true )
 	z = false;
 }
 }

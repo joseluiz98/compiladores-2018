@@ -503,7 +503,7 @@ public class LexicalAnalyzer {
                     {
                         current = FileReader.getNextChar(currentByte+1);
                         
-                        if((delimiterToken(current)) != null)
+                        if(Character.isSpace(current) || (delimiterToken(current)) != null)
                             return true;
                     }
                 }
