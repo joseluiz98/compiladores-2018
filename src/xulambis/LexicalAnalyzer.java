@@ -499,7 +499,13 @@ public class LexicalAnalyzer {
                 {
                     currentByte++;
                     current = FileReader.getNextChar(currentByte);
-                    if(current == 'e') return true;
+                    if(current == 'e')
+                    {
+                        currentByte++;
+                        current = FileReader.getNextChar(currentByte);
+                        if(current == ' ')
+                            return true;
+                    }
                 }
             }
         }

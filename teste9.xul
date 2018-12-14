@@ -6,10 +6,9 @@ x = 13;
 y = false;
 while ( y ) {
 i = i + j;
-if ( i < j ){
-  j=y;
+if ( i < truee ){
   while(j>=10)
-    i = y;
+	y = false;
 }
 }
 }
