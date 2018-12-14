@@ -47,7 +47,7 @@ public class SemanticalAnalyzer {
                 ///SymbolsTable
                 analyzeCode();
             }
-            else if(whileOrIf(current))
+            else if(isWhileOrIf(current))
             {
                 System.out.println("while or if");
                 analyzeCode();
@@ -329,7 +329,7 @@ public class SemanticalAnalyzer {
         return false;
     }
     
-    private static boolean whileOrIf(Token current) throws ScriptException, Exception
+    private static boolean isWhileOrIf(Token current) throws ScriptException, Exception
     {
         int startToken = currentToken;
         if(current.getLexem() == "while" || current.getLexem() == "if")

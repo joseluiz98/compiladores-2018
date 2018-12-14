@@ -90,7 +90,7 @@ public class SintaticalAnalyzer
                 lastTokenFound = "while";
                 bodyAnalysis();
             }
-            else if(assignToken(current))
+            else if(isAssignment(current))
             {
                 System.out.println("assign");
                 lastTokenFound = "assign";
@@ -152,7 +152,7 @@ public class SintaticalAnalyzer
     }
     
     
-    private static boolean assignToken(Token current) throws ScriptException
+    private static boolean isAssignment(Token current) throws ScriptException
     {
         String mathExpression = "";
         int startToken = currentToken;

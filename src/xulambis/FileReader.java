@@ -22,7 +22,7 @@ public class FileReader
     private static FileInputStream reader;
     private static FileReader fileReader;
     private static RandomAccessFile raf;
-    private static String filePath = "teste9.xul";
+    private static String filePath = "";
     private File file = new File(filePath);
     private List<String> fileContent = new ArrayList();
     private SymbolsTable lexems = new SymbolsTable();
@@ -75,5 +75,10 @@ public class FileReader
     public static long getLastByte() throws IOException
     {
         return raf.length()-1;
+    }
+    
+    public static void setFilePath(String filePath)
+    {
+        FileReader.filePath = filePath;
     }
 }

@@ -17,6 +17,7 @@ public class Xulambis {
         try
         {
             System.setProperty("file.encoding", "UTF-8");
+            FileReader.setFilePath("teste7.xul");
             
             if(!LexicalAnalyzer.getInstance().analyzeCode())
             {
