@@ -17,12 +17,12 @@ public class Xulambis {
         try
         {
             System.setProperty("file.encoding", "UTF-8");
-            FileReader.setFilePath("teste7.xul");
+            FileReader.setFilePath("teste13.xul");
             
             if(!LexicalAnalyzer.getInstance().analyzeCode())
             {
                 System.out.println("Erro na análise léxica");
-                System.exit(0);
+                System.exit(0); 
             }
             
             System.out.println("Tokens do código-fonte\n");

@@ -1,0 +1,9 @@
+{
+float x;
+bool y;
+x = 13.8;
+y = true;
+while (y < x) {
+x = x + y;
+}
+}

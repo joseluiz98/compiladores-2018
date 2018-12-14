@@ -3,8 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/ifmg/compiladores-2018/src/xulambis/FileReader.java</file>
-            <file>file:/home/ifmg/compiladores-2018/src/xulambis/SemanticalAnalyzer.java</file>
+            <file>file:/C:/Users/Samsung/Desktop/IFMG/6º%20Periodo/Compiladores%20(Kenia)/compiladores-2018/src/xulambis/LexicalAnalyzer.java</file>
+            <file>file:/C:/Users/Samsung/Desktop/IFMG/6º%20Periodo/Compiladores%20(Kenia)/compiladores-2018/src/xulambis/Xulambis.java</file>
+            <file>file:/C:/Users/Samsung/Desktop/IFMG/6º%20Periodo/Compiladores%20(Kenia)/compiladores-2018/src/xulambis/SintaticalAnalyzer.java</file>
+            <file>file:/C:/Users/Samsung/Desktop/IFMG/6º%20Periodo/Compiladores%20(Kenia)/compiladores-2018/src/xulambis/FileReader.java</file>
         </group>
     </open-files>
 </project-private>
