@@ -129,7 +129,7 @@ public class LexicalAnalyzer {
                 currentByte++;
                 return startAnalysis();
             }
-            else if((punct = punctuationToken(current)) != null)
+            else if((punct = delimiterToken(current)) != null)
             {
                 System.out.println("punct");
                 token.setTokenName("delimiter");
@@ -502,7 +502,8 @@ public class LexicalAnalyzer {
                     if(current == 'e')
                     {
                         current = FileReader.getNextChar(currentByte+1);
-                        if(current == ' ' || current == ';')
+                        
+                        if((delimiterToken(current)) != null)
                             return true;
                     }
                 }
@@ -550,7 +551,7 @@ public class LexicalAnalyzer {
         }
         return false;
     }
-    private static Character punctuationToken(char current) throws FileNotFoundException, IOException
+    private static Character delimiterToken(char current) throws FileNotFoundException, IOException
     {
         final String REGEX="[^.%*$#@?^&'|/\\\\~\\[\\]{}+-;\"-()]*";
         
