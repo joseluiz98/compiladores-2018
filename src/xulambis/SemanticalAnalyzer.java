@@ -198,7 +198,7 @@ public class SemanticalAnalyzer {
             current = TokenList.getTokenAt(currentToken);
             aux = current.getLexem();
             
-            if(parenthesisCounter != 0) System.out.println(aux + " ");
+            if(parenthesisCounter != 0) System.out.print(aux + " ");
         } while(parenthesisCounter != 0);
             
         currentToken--;

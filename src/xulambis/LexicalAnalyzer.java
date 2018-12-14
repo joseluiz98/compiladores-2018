@@ -501,9 +501,8 @@ public class LexicalAnalyzer {
                     current = FileReader.getNextChar(currentByte);
                     if(current == 'e')
                     {
-                        currentByte++;
-                        current = FileReader.getNextChar(currentByte);
-                        if(current == ' ')
+                        current = FileReader.getNextChar(currentByte+1);
+                        if(current == ' ' || current == ';')
                             return true;
                     }
                 }
