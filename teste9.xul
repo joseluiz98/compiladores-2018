@@ -2,13 +2,14 @@
 int i; int j; float x; bool y;
 j = 10; i = 20;
 i = i + j;
-x = 13;
-y = false;
-while ( y ) {
+x = 13;8;
+y = 10;
+while ( i ) {
 i = i + j;
-if ( i < truee ){
+if ( i < j ){
+  j=y;
   while(j>=10)
-	y = false;
+    i = i+true;
 }
 }
 }

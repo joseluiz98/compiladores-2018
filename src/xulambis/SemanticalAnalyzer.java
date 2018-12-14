@@ -109,73 +109,68 @@ public class SemanticalAnalyzer {
             memberTypes.add(SymbolsTable.getToken(varToStoreResults.getLexem()).getTipo());
 
         if(current.getTokenName() == "identifier")
-        {
-            if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()) == null)
-            {
+        {                    
+            if(!SymbolsTable.isDeclared(varToStoreResults.getLexem()))
                 throw new Exception("var " + varToStoreResults.getLexem() + " not declared ");
-            }
-                    
-            if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).isDeclarada())
+            
+            currentToken++;
+            current = TokenList.getTokenAt(currentToken);
+            System.out.print(current.getLexem() + " ");
+            if(current.getTokenName() == "assignment")
             {
                 currentToken++;
                 current = TokenList.getTokenAt(currentToken);
-                System.out.print(current.getLexem() + " ");
-                if(current.getTokenName() == "assignment")
+                ArrayList<Token> members = new ArrayList();
+
+                // Pega os tipos de todos os ids da atribuição
+                while(!";".equals(current.getLexem()))
                 {
+                    System.out.print(current.getLexem() + " ");
+                    // Se for um id, faça
+                    if("identifier".equals(current.getTokenName()))
+                    {
+                        if(SymbolsTable.isDeclared(current.getLexem()))
+                        {
+                            memberTypes.add(SymbolsTable.getTokens().get(current.getLexem()).getTipo());
+//                                else throw new Exception("Invalid operand types on assignment! Expect int or float but got " + SymbolsTable.getTokens().get(current.getLexem()).getTipo());
+                        }
+                        else throw new Exception("Var " + current.getLexem() + " not declared.");
+                    }
+                    members.add(current);
                     currentToken++;
                     current = TokenList.getTokenAt(currentToken);
-                    ArrayList<Token> members = new ArrayList();
-                    
-                    // Pega os tipos de todos os ids da atribuição
-                    while(!";".equals(current.getLexem()))
+                }
+
+                // Verifica se todos os tipos são iguais
+                boolean allEqual = memberTypes.stream().distinct().limit(2).count() <= 1;
+                if(!allEqual)
+                {
+                    memberTypes.add(1, "=");
+                    throw new Exception("Incompatible types on assignment vars. Types given: " + memberTypes.toString());
+                }
+
+                // Se a variável a armazenar o resultado é bool, faça
+                if("bool".equals(SymbolsTable.getToken(varToStoreResults.getLexem()).getTipo()))
+                {
+                    current = TokenList.getTokenAt(currentToken-1);
+                    if("true".equals(current.getLexem()) || "false".equals(current.getLexem()))
+                        return true;
+                    else if(SymbolsTable.isDeclared(current.getLexem()) && "bool".equals(SymbolsTable.getToken(current.getLexem()).getTipo()))
+                        return true;
+                    else throw new Exception("Invalid value to store in bool var, expect true or false but got " + current.getLexem());
+                }
+                // Senão, a variável é numérica, portanto
+                // verifique se x é de um tipo numérico
+                else
+                {
+                    for(Token token : members)
                     {
-                        System.out.print(current.getLexem() + " ");
-                        // Se for um id, faça
-                        if("identifier".equals(current.getTokenName()))
-                        {
-                            if(SymbolsTable.isDeclared(current.getLexem()))
-                            {
-                                memberTypes.add(SymbolsTable.getTokens().get(current.getLexem()).getTipo());
-//                                else throw new Exception("Invalid operand types on assignment! Expect int or float but got " + SymbolsTable.getTokens().get(current.getLexem()).getTipo());
-                            }
-                            else throw new Exception("Var " + current.getLexem() + " not declared.");
-                        }
-                        members.add(current);
-                        currentToken++;
-                        current = TokenList.getTokenAt(currentToken);
+                        if("reserved-word".equals(token.getTokenName()))
+                            throw new Exception("Invalid attribution.");
                     }
-                    
-                    // Verifica se todos os tipos são iguais
-                    boolean allEqual = memberTypes.stream().distinct().limit(2).count() <= 1;
-                    if(!allEqual)
-                    {
-                        memberTypes.add(1, "=");
-                        throw new Exception("Incompatible types on assignment vars. Types given: " + memberTypes.toString());
-                    }
-                    
-                    // Se a variável a armazenar o resultado é bool, faça
-                    if("bool".equals(SymbolsTable.getToken(varToStoreResults.getLexem()).getTipo()))
-                    {
-                        current = TokenList.getTokenAt(currentToken-1);
-                        if("true".equals(current.getLexem()) || "false".equals(current.getLexem()))
-                            return true;
-                        else if(SymbolsTable.isDeclared(current.getLexem()) && "bool".equals(SymbolsTable.getToken(current.getLexem()).getTipo()))
-                            return true;
-                        else throw new Exception("Invalid value to store in bool var, expect true or false but got " + current.getLexem());
-                    }
-                    // Senão, a variável é numérica, portanto
-                    // verifique se x é de um tipo numérico
-                    else
-                    {
-                        for(Token token : members)
-                        {
-                            if("reserved-word".equals(token.getTokenName()))
-                                throw new Exception("Invalid attribution.");
-                        }
-                        if("float".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()))
-                            return true;
-                        else throw new Exception("Invalid store var type, expect float or int but got a " + SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo());
-                    }
+                    if("float".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()))
+                        return true;
+                    else throw new Exception("Invalid store var type, expect float or int but got a " + SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo());
                 }
             }
         }
@@ -226,12 +221,11 @@ public class SemanticalAnalyzer {
             if("identifier".equals(firstMember.getTokenName()))
             {
                 // esse id foi declarado
-                if(SymbolsTable.getTokens().get(firstMember.getLexem()).isDeclarada())
-                {
-                    // E é do tipo boolean, é uma comparação válida
-                    if("bool".equals(SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo())) return true;
-                    else throw new Exception("While or If with one member expect bool type. Got a " + SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() + ".");
-                }
+                if(!SymbolsTable.isDeclared(firstMember.getLexem()))
+                    throw new Exception("Var " + firstMember.getLexem() + " was never declared.");
+                // E é do tipo boolean, é uma comparação válida
+                if("bool".equals(SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo())) return true;
+                else throw new Exception("While or If with one member expect bool type. Got a " + SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() + ".");
             }
             // Porém, se é somente um membro, mas não é um id, teste se é uma palavra reservada
             else if("reserved-word".equals(firstMember.getTokenName()))
