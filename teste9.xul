@@ -1,15 +1,15 @@
 {
-bool i; int j; float x; bool y;
+int i; int j; float x; bool y;
 j = 10; i = 20;
 i = i + j;
 x = 13;
-y = 10;
-while ( i ) {
+y = false;
+while ( y ) {
 i = i + j;
 if ( i < j ){
   j=y;
   while(j>=10)
-    i = i+true;
+    i = y;
 }
 }
 }

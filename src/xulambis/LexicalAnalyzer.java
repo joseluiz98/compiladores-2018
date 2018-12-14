@@ -547,7 +547,7 @@ public class LexicalAnalyzer {
     }
     private static Character punctuationToken(char current) throws FileNotFoundException, IOException
     {
-        final String REGEX="[^.%*$#@?^!&'|/\\\\~\\[\\]{}+-;\"-()]*";
+        final String REGEX="[^.%*$#@?^&'|/\\\\~\\[\\]{}+-;\"-()]*";
         
         int startByte = currentByte;
         if (REGEX.indexOf(current) >= 0) return current;
@@ -563,7 +563,7 @@ public class LexicalAnalyzer {
         char nextChar = '\f';
         if(currentByte+1 < FileReader.getLastByte()) nextChar = FileReader.getNextChar(currentByte+1);
         
-        if(current == '<' || current == '>' || (current == '=' && nextChar == '='))
+        if(current == '<' || current == '>' || current == '!' || (current == '=' && nextChar == '='))
         {
             comparisonToken.add(current);
             currentByte++;

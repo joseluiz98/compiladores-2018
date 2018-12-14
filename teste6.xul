@@ -1,11 +1,9 @@
 {
-int i; int j; float x; bool y;
-j = 10; i = 20;
-i = i + j;
+int i; bool j; float x; bool y;
+i = 20;
 x = 13.8;
-y = 10;
+y = true;
 while ( y ) {
-i = i + j;
 if ( i < j ) break;
 }
 }

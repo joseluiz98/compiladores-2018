@@ -103,13 +103,16 @@ public class SemanticalAnalyzer {
         int startToken = currentToken;
         Token nextToken = TokenList.getTokenAt(currentToken+1);
         Token varToStoreResults = current;
+        ArrayList<String> memberTypes = new ArrayList();
         
+        if("identifier".equals(current.getTokenName()))
+            memberTypes.add(SymbolsTable.getToken(varToStoreResults.getLexem()).getTipo());
+
         if(current.getTokenName() == "identifier")
         {
             if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()) == null)
             {
-                System.out.println("var not declared ");
-                return false;
+                throw new Exception("var " + varToStoreResults.getLexem() + " not declared ");
             }
                     
             if(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).isDeclarada())
@@ -121,27 +124,33 @@ public class SemanticalAnalyzer {
                 {
                     currentToken++;
                     current = TokenList.getTokenAt(currentToken);
-                    ArrayList<String> memberTypes = new ArrayList();
+                    ArrayList<Token> members = new ArrayList();
                     
+                    // Pega os tipos de todos os ids da atribuição
                     while(!";".equals(current.getLexem()))
                     {
-                        System.out.println(current.getLexem() + " ");
+                        System.out.print(current.getLexem() + " ");
                         // Se for um id, faça
                         if("identifier".equals(current.getTokenName()))
                         {
                             if(SymbolsTable.isDeclared(current.getLexem()))
                             {
-                                if("float".equals(SymbolsTable.getTokens().get(current.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(current.getLexem()).getTipo()))
-                            {
-                                memberTypes.add(SymbolsTable.getTokens().get(current.getLexem()).getTipo());                                
-                            }
-                            else throw new Exception("Invalid operand types on assignment! Expect int or float but got " + SymbolsTable.getTokens().get(current.getLexem()).getTipo());
+                                memberTypes.add(SymbolsTable.getTokens().get(current.getLexem()).getTipo());
+//                                else throw new Exception("Invalid operand types on assignment! Expect int or float but got " + SymbolsTable.getTokens().get(current.getLexem()).getTipo());
                             }
                             else throw new Exception("Var " + current.getLexem() + " not declared.");
                         }
-                        
+                        members.add(current);
                         currentToken++;
                         current = TokenList.getTokenAt(currentToken);
+                    }
+                    
+                    // Verifica se todos os tipos são iguais
+                    boolean allEqual = memberTypes.stream().distinct().limit(2).count() <= 1;
+                    if(!allEqual)
+                    {
+                        memberTypes.add(1, "=");
+                        throw new Exception("Incompatible types on assignment vars. Types given: " + memberTypes.toString());
                     }
                     
                     // Se a variável a armazenar o resultado é bool, faça
@@ -150,13 +159,19 @@ public class SemanticalAnalyzer {
                         current = TokenList.getTokenAt(currentToken-1);
                         if("true".equals(current.getLexem()) || "false".equals(current.getLexem()))
                             return true;
-                        else if(SymbolsTable.getToken(current.getLexem()).isDeclarada() && "bool".equals(SymbolsTable.getToken(current.getLexem()).getTipo()))
+                        else if(SymbolsTable.isDeclared(current.getLexem()) && "bool".equals(SymbolsTable.getToken(current.getLexem()).getTipo()))
                             return true;
-                    }                        
+                        else throw new Exception("Invalid value to store in bool var, expect true or false but got " + current.getLexem());
+                    }
                     // Senão, a variável é numérica, portanto
                     // verifique se x é de um tipo numérico
                     else
                     {
+                        for(Token token : members)
+                        {
+                            if("reserved-word".equals(token.getTokenName()))
+                                throw new Exception("Invalid attribution.");
+                        }
                         if("float".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()) || "int".equals(SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo()))
                             return true;
                         else throw new Exception("Invalid store var type, expect float or int but got a " + SymbolsTable.getTokens().get(varToStoreResults.getLexem()).getTipo());
@@ -244,9 +259,16 @@ public class SemanticalAnalyzer {
                 // Se o primeiro membro for um id
                 if("identifier".equals(firstMember.getTokenName()))
                 {
-                    // E o segundo também for um id
+                    // e estiver sido declarado
+                    if(!SymbolsTable.isDeclared(firstMember.getLexem()))
+                        throw new Exception("Var " + firstMember.getLexem() + " was never declared.");
+                    
                     if("identifier".equals(secondMember.getTokenName()))
                     {
+                        // E o segundo também for um id também já declarado
+                        if(!SymbolsTable.isDeclared(secondMember.getLexem()))
+                            throw new Exception("Var " + secondMember.getLexem() + " was never declared.");
+
                         // Compare seus tipos
                         if(SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() == SymbolsTable.getTokens().get(secondMember.getLexem()).getTipo())
                         {
@@ -268,6 +290,31 @@ public class SemanticalAnalyzer {
                         else throw new Exception("Foribdden comparison between " + SymbolsTable.getTokens().get(firstMember.getLexem()).getTipo() + " and " 
                                 + SymbolsTable.getTokens().get(secondMember.getLexem()).getTipo());
                     }
+                    // Se o segundo não for um id, e o primeiro for uma var float ou int
+                    else if("float".equals(SymbolsTable.getToken(firstMember.getLexem()).getTipo()) || "int".equals(SymbolsTable.getToken(firstMember.getLexem()).getTipo()))
+                    {
+                        // então o segundo tem de ser um número
+                        if("number".equals(secondMember.getTokenName())) return true;
+                        else throw new Exception("Invalid comparison type between numerical var and " + secondMember.getLexem());
+                    }
+                    // Se o segundo não for um id, e o primeiro for uma var bool
+                    else if("bool".equals(SymbolsTable.getToken(firstMember.getLexem()).getTipo()))
+                    {
+                        // o segundo tem que ser true, false, 1 ou 0
+                        ArrayList<String> validOptions = new ArrayList();
+                        validOptions.add("1");
+                        validOptions.add("0");
+                        validOptions.add("true");
+                        validOptions.add("false");
+                        
+                        if(validOptions.contains(secondMember.getLexem()))
+                        {
+                            if("==".equals(operator.getLexem()) || "!=".equals(operator.getLexem())) return true;
+                            else throw new Exception("Invalid operand " + operator.getLexem() + " for bool type.");
+                        }
+                        else throw new Exception("Invalid comparison between bool and " + secondMember.getLexem());
+                    }
+                        
                     // Caso o segundo membro não seja um identificador, ele tem de ser um número,
                     // pois não existe String na xulambis
                     else if("number".equals(secondMember.getTokenName()))
@@ -290,7 +337,6 @@ public class SemanticalAnalyzer {
     
     private static boolean whileOrIf(Token current) throws ScriptException, Exception
     {
-    //        FALTA TRATAR WHILE(TRUE) OU WHILE(FALSE)
         int startToken = currentToken;
         if(current.getLexem() == "while" || current.getLexem() == "if")
         {

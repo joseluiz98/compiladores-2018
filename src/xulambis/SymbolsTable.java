@@ -34,16 +34,6 @@ public class SymbolsTable {
         }
         //id já declarado.
         return false;
-        /*List<String> list = tokens.get(key);
-        if(list == null)
-        {
-            list = new ArrayList();
-            list.add(lexem);
-        }
-        else
-        {
-            throw new Exception("Redeclaração da variável " + key);
-        }*/
         
     }
     
